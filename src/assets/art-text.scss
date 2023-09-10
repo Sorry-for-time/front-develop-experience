@@ -1,0 +1,50 @@
+.color-text-container {
+  position: relative;
+  width: fit-content;
+  border-radius: 8px;
+  margin: 10px 0;
+  padding: 5px 10px;
+  text-align: center;
+  box-shadow: 0 0 2px rgb(0, 17, 255), 0 1px 3px rgb(94, 0, 94),
+    0 0 8px 2px rgba(255, 171, 213, 0.589) inset;
+  font-family: monospace;
+
+  list-style: none;
+  font-weight: bolder;
+  font-size: 20px;
+  user-select: none;
+
+  .color-panel {
+    --g-1: #f8fbff;
+    --g-2: #edadb0;
+    --g-3: #ffaac9;
+    --text: #7d3f6b;
+  }
+
+  .stroked {
+    -webkit-text-stroke: 3px transparent;
+    background: -webkit-gradient(
+      linear,
+      left top,
+      left bottom,
+      from(var(--g-1)),
+      color-stop(67.19%, var(--g-2)),
+      to(var(--g-3))
+    );
+    background: linear-gradient(
+      180deg,
+      var(--g-1) 0,
+      var(--g-2) 67.19%,
+      var(--g-3) 100%
+    );
+    background-clip: text;
+    color: var(--text);
+  }
+
+  .fill-fade {
+    position: absolute;
+    top: 0;
+    color: #363599;
+    mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.7), transparent 70%);
+  }
+}

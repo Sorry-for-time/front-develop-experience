@@ -1,0 +1,32 @@
+.sample-wrapper {
+  width: 100%;
+  height: auto;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.ul-list {
+  width: fit-content;
+}
+
+.st-input {
+  height: fit-content;
+  border-radius: 5px;
+  outline: none;
+  border: 2px solid rgb(183, 210, 223);
+  position: relative;
+  font-weight: normal;
+  padding: 5px 10px;
+
+  &::placeholder {
+    color: #888888;
+  }
+
+  &:focus-visible {
+    transition: all 200ms ease-out;
+    border: 2px solid rgb(0, 147, 184);
+    caret: rgb(147, 149, 252);
+    box-shadow: 0 0 3px white;
+    color: #494949;
+  }
+}

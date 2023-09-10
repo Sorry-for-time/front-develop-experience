@@ -1,0 +1,36 @@
+.input-wrapper {
+  --st-height: 30px;
+
+  height: var(--st-height);
+  width: fit-content;
+  display: inline-block;
+
+  .input-ref {
+    height: 100%;
+    border-radius: 5px;
+    outline: none;
+    border: 2px solid rgb(183, 210, 223);
+    position: relative;
+    font-weight: normal;
+    padding-left: 10px;
+    padding-right: 10px;
+
+    &::placeholder {
+      color: #888888;
+    }
+
+    &:focus-visible {
+      border: 2px solid rgb(0, 147, 184);
+      caret: rgb(147, 149, 252);
+      box-shadow: 0 0 3px white;
+      color: #494949;
+    }
+  }
+
+  .capital-hint {
+    line-height: var(--st-height);
+    width: max-content;
+    position: absolute;
+    padding-left: 10px;
+  }
+}
