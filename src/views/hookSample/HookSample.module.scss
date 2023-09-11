@@ -1,0 +1,24 @@
+.hook-sample-wrapper {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  height: 100%;
+  gap: 10px;
+  justify-content: center;
+
+  .card {
+    margin: 5px;
+    padding: 10px;
+    height: fit-content;
+    box-shadow: 0 1px 2px #ccc, 0 0 3px 1px #ccc inset;
+    border-radius: 3px;
+    overflow: hidden;
+
+    h4 {
+      text-align: center;
+    }
+
+    button {
+      margin: 5px;
+    }
+  }
+}

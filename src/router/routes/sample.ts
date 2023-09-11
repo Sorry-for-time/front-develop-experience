@@ -1,3 +1,4 @@
+import { HookSample } from "@/views/hookSample/HookSample";
 import type { RouteRecordRaw } from "vue-router";
 
 const sampleRouteConfig: RouteRecordRaw[] = [
@@ -16,7 +17,11 @@ const sampleRouteConfig: RouteRecordRaw[] = [
     name: "custom-directive",
     component: () => import("@/views/CustomDirectiveSample.vue")
   },
-
+  {
+    path: "/hook-sample",
+    name: "hook-sample",
+    component: HookSample
+  }
 ];
 
 export { sampleRouteConfig };
