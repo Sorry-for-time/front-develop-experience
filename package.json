@@ -2,6 +2,12 @@
   "name": "vue-homework1",
   "version": "0.0.0",
   "private": true,
+  "license": "MIT",
+  "author": {
+    "name": "Shalling",
+    "url": "https://github.com/Sorry-for-time/vue-homework1",
+    "email": "wangsitutired@gmail.com"
+  },
   "scripts": {
     "dev": "vite --host",
     "build": "run-p type-check build-only",
