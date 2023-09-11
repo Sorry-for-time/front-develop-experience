@@ -2,33 +2,13 @@
   <div class="wrapper">
     <nav class="nav-header">
       <RouterLink
+        v-for="item of routeList"
+        :key="item.name"
         class="link"
         active-class="when-active"
-        :to="{ name: 'index' }"
+        :to="{ name: item.name }"
       >
-        home
-      </RouterLink>
-      <RouterLink
-        active-class="when-active"
-        :to="{ name: 'css-text' }"
-        class="link"
-      >
-        css-text
-      </RouterLink>
-      <RouterLink
-        active-class="when-active"
-        :to="{ name: 'component-sample' }"
-        class="link"
-      >
-        component-sample
-      </RouterLink>
-
-      <RouterLink
-        active-class="when-active"
-        :to="{ name: 'custom-directive' }"
-        class="link"
-      >
-        custom-directive
+        {{ item.desc }}
       </RouterLink>
     </nav>
 
@@ -43,6 +23,38 @@
     </main>
   </div>
 </template>
+
+<script setup lang="ts">
+import { ref, type Ref } from "vue";
+
+type RouteDesc = {
+  name: string;
+  desc: string;
+};
+
+const routeList: Ref<Array<RouteDesc>> = ref([
+  {
+    name: "index",
+    desc: "home"
+  },
+  {
+    name: "css-text",
+    desc: "css-text"
+  },
+  {
+    name: "component-sample",
+    desc: "component-sample"
+  },
+  {
+    name: "custom-directive",
+    desc: "custom-directive"
+  },
+  {
+    name: "hook-sample",
+    desc: "hook-sample"
+  }
+]);
+</script>
 
 <style lang="scss" scoped>
 .wrapper {
