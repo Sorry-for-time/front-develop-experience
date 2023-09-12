@@ -6,6 +6,7 @@ import { loadingBarHooks } from "@/main";
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [...indexConfig, ...sampleRouteConfig],
+  strict: true,
   scrollBehavior: (to, from, savedPosition) => {
     return savedPosition
       ? savedPosition
