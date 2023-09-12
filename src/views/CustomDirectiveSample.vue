@@ -28,9 +28,8 @@
 </template>
 
 <script setup lang="ts">
-import { vDraggable } from "@/directives/vDraggable";
-import { ref, type Ref } from "vue";
 import { nanoid } from "nanoid";
+import { ref, type Ref } from "vue";
 
 const createNextInt = (limit: number): number => {
   return Math.floor(Math.random() * limit + 1);
@@ -46,7 +45,7 @@ const list: Ref<Array<string>> = ref(
   )
 );
 
-const addRandom: VoidFunction = (): void => {
+const addRandom: VoidFunction = async () => {
   list.value.push(`the tag: ${nanoid(4)}`);
 };
 </script>
