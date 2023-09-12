@@ -1,6 +1,6 @@
-import type { Directive, DirectiveBinding } from "vue";
+import { type Directive, type DirectiveBinding } from "vue";
 
-type DraggableDirectiveType = Partial<{
+type DraggableDirectiveParam = Partial<{
   activeClass: string | Array<string>;
   /**
    * 是否根据默认设置的 data-x, dada-y 应用默认元素位置
@@ -12,13 +12,18 @@ type DraggableDirectiveType = Partial<{
   activePriority: boolean;
 }>;
 
-const vDraggable: Directive<HTMLElement, DraggableDirectiveType> & {
+type ExtentDirectiveType = {
   listener: ((...args: Array<any>) => void) | undefined;
   wrapperFunc: (
     el: HTMLElement,
-    binding: DirectiveBinding<DraggableDirectiveType>
+    binding: DirectiveBinding<DraggableDirectiveParam>
   ) => void;
-} = {
+};
+
+type DraggableDirectiveType = Directive<HTMLElement, DraggableDirectiveParam> &
+  ExtentDirectiveType;
+
+const vDraggable: DraggableDirectiveType = {
   listener: void 0,
   wrapperFunc: (el: HTMLElement, binding): void => {
     // 获取所有
@@ -119,27 +124,29 @@ const vDraggable: Directive<HTMLElement, DraggableDirectiveType> & {
     vDraggable.listener = eventHandler;
     document.addEventListener("pointerdown", eventHandler);
   },
-  mounted: (el: HTMLElement, binding): void => {
+  mounted: (el: HTMLElement, binding, vnode, prevVnode): void => {
     console.log("mounted");
     vDraggable.wrapperFunc(el, binding);
   },
-  updated: (el, binding, vnode, prevVnode): void => {
+  updated: (el, binding, _vnode, _prevVnode): void => {
     console.log("updated");
     if (typeof vDraggable.listener === "function") {
       document.removeEventListener("pointerdown", vDraggable.listener);
     }
     vDraggable.wrapperFunc(el, binding);
   },
-
-  beforeUnmount: (el, binding, vnode, prevVnode): void => {
+  beforeUnmount: (_el, _binding, _vnode, _prevVnode): void => {
+    console.log("before unmount...");
     if (typeof vDraggable.listener === "function") {
       document.removeEventListener("pointerdown", vDraggable.listener);
-      console.log("before unmounted");
+      document.removeEventListener("mousedown", vDraggable.listener);
     }
-  },
-  unmounted: () => {
-    console.log("unmounted");
   }
 };
 
 export { vDraggable };
+export type {
+  DraggableDirectiveParam,
+  ExtentDirectiveType,
+  DraggableDirectiveType
+};
