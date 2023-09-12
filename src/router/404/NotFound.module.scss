@@ -1,0 +1,28 @@
+.not-found-wrapper {
+  width: 100%;
+  display: grid;
+}
+
+.loading-gif {
+  margin: 40px auto;
+  border-radius: 50%;
+  width: 20%;
+  min-width: 100px;
+  max-width: 300px;
+}
+
+.error-hint {
+  text-align: center;
+}
+
+.back-hint {
+  color: cadetblue;
+  cursor: default;
+  padding: 0 5px;
+
+  &:hover {
+    transition: all 600ms ease-out;
+    box-shadow: 0 0 4px cadetblue;
+    border-radius: 3px;
+  }
+}
