@@ -1,15 +1,23 @@
 <template>
   <div class="wrapper">
     <nav class="nav-header">
-      <RouterLink
-        v-for="item of routeList"
+      <a
+        v-for="(item, index) of routeList"
         :key="item.name"
         class="link"
-        active-class="when-active"
-        :to="{ name: item.name }"
+        :class="{ 'when-active': router.currentRoute.value.name === item.name }"
+        :style="{
+          color:
+            item.name === router.currentRoute.value.name
+              ? 'cadetblue'
+              : colorList[index % colorList.length],
+          fontWeight:
+            item.name === router.currentRoute.value.name ? 'bold' : 'normal'
+        }"
+        @click="switchRoute(item.name)"
       >
         {{ item.desc }}
-      </RouterLink>
+      </a>
     </nav>
 
     <main class="route-switch">
@@ -26,6 +34,8 @@
 
 <script setup lang="ts">
 import { ref, type Ref } from "vue";
+import type { Router } from "vue-router";
+import { useRouter } from "vue-router";
 
 type RouteDesc = {
   name: string;
@@ -54,6 +64,22 @@ const routeList: Ref<Array<RouteDesc>> = ref([
     desc: "hook-sample"
   }
 ]);
+
+const colorList: ReadonlyArray<string> = [
+  "rgb(135, 172, 166)",
+  "rgb(105, 123, 141)",
+  "rgb(154, 132, 172)"
+];
+
+const switchRoute = (routName: string): void => {
+  if (router.currentRoute.value.name !== routName) {
+    router.replace({
+      name: routName
+    });
+  }
+};
+
+const router: Router = useRouter();
 </script>
 
 <style lang="scss" scoped>
@@ -86,6 +112,8 @@ const routeList: Ref<Array<RouteDesc>> = ref([
   color: aliceblue;
   font-size: 18px;
   font-weight: normal;
+  cursor: default;
+  user-select: none;
 
   &:first-child {
     margin-left: 20px;
@@ -93,9 +121,9 @@ const routeList: Ref<Array<RouteDesc>> = ref([
 }
 
 .when-active {
-  color: cadetblue;
-  margin: 0 10px;
+  margin: 0 8px;
   transition: all 300ms ease-out;
   transform: scale(1.2);
+  text-decoration: underline;
 }
 </style>
