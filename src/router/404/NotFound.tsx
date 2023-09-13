@@ -4,9 +4,15 @@ import style from "./NotFound.module.scss";
 
 const NotFound = defineComponent({
   name: "NotFound",
-  setup() {
+  props: {
+    wait: {
+      type: Number,
+      default: 16
+    }
+  },
+  setup(props) {
     const router = useRouter();
-    const countDown: Ref<number> = ref(15);
+    const countDown: Ref<number> = ref(props.wait);
     let timer: number | undefined = void 0;
     const backHome: VoidFunction = (): void => {
       clearInterval(timer);
@@ -21,9 +27,10 @@ const NotFound = defineComponent({
       backHome
     };
   },
-  mounted(): void {
+  activated() {
+    this.countDown = this.wait;
     (this.timer as unknown as number) = setInterval(() => {
-      if (this.countDown > 0) {
+      if (this.countDown > 1) {
         this.countDown--;
       } else {
         clearInterval(this.timer);
@@ -33,7 +40,7 @@ const NotFound = defineComponent({
       }
     }, 1000);
   },
-  beforeRouteLeave() {
+  deactivated() {
     clearInterval(this.timer);
   },
   render(): JSX.Element {
