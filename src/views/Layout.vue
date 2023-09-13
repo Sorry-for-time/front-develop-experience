@@ -2,21 +2,27 @@
   <div class="wrapper">
     <nav class="nav-header">
       <a
-        v-for="(item, index) of routeList"
-        :key="item.name"
+        v-for="({ name, desc }, index) of routeList"
+        :key="name"
         class="link"
-        :class="{ 'when-active': router.currentRoute.value.name === item.name }"
-        :style="{
-          color:
-            item.name === router.currentRoute.value.name
-              ? 'cadetblue'
-              : colorList[index % colorList.length],
-          fontWeight:
-            item.name === router.currentRoute.value.name ? 'bold' : 'normal'
+        :class="{
+          'when-active':
+            routeName === name ||
+            (!router.hasRoute(name) && routeName === 'not-found')
         }"
-        @click="switchRoute(item.name)"
+        :style="[
+          {
+            color:
+              name === routeName ||
+              (!router.hasRoute(name) && routeName === 'not-found')
+                ? 'cadetblue'
+                : colorList[index % colorList.length],
+            fontWeight: name === routeName ? 'bold' : 'normal'
+          }
+        ]"
+        @click="switchRoute(name)"
       >
-        {{ item.desc }}
+        {{ desc }}
       </a>
     </nav>
 
@@ -33,6 +39,7 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from "vue";
 import { ref, type Ref } from "vue";
 import type { Router } from "vue-router";
 import { useRouter } from "vue-router";
@@ -41,7 +48,7 @@ type RouteDesc = {
   name: string;
   desc: string;
 };
-
+const routeName = computed(() => router.currentRoute.value.name);
 const routeList: Ref<Array<RouteDesc>> = ref([
   {
     name: "index",
@@ -62,6 +69,10 @@ const routeList: Ref<Array<RouteDesc>> = ref([
   {
     name: "hook-sample",
     desc: "hook-sample"
+  },
+  {
+    name: "not-exist",
+    desc: "404 not -found"
   }
 ]);
 
@@ -72,9 +83,15 @@ const colorList: ReadonlyArray<string> = [
 ];
 
 const switchRoute = (routName: string): void => {
-  if (router.currentRoute.value.name !== routName) {
+  try {
+    if (router.currentRoute.value.name !== routName) {
+      router.replace({
+        name: routName
+      });
+    }
+  } catch (reason) {
     router.replace({
-      name: routName
+      name: "not-found"
     });
   }
 };
