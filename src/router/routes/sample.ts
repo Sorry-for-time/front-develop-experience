@@ -21,6 +21,11 @@ const sampleRouteConfig: RouteRecordRaw[] = [
     path: "/hook-sample",
     name: "hook-sample",
     component: HookSample
+  },
+  {
+    path: "/computed-sample",
+    name: "computed-sample",
+    component: () => import("@/views/ComputedSample.vue")
   }
 ];
 

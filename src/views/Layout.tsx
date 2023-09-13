@@ -41,6 +41,10 @@ const Layout = defineComponent({
         desc: "component-sample"
       },
       {
+        name: "computed-sample",
+        desc: "computed-sample"
+      },
+      {
         name: "custom-directive",
         desc: "custom-directive"
       },
