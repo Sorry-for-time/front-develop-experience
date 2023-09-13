@@ -12,7 +12,7 @@ const indexConfig: RouteRecordRaw[] = [
     name: "index",
     component: GrammarSample
   },
-  { path: "/:pathMatch(.*)*", name: "NotFound", component: NotFound }
+  { path: "/:pathMatch(.*)*", name: "not-found", component: NotFound }
 ];
 
 export { indexConfig };
