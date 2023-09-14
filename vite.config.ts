@@ -19,6 +19,13 @@ export default defineConfig({
       "@": fileURLToPath(new URL("./src", import.meta.url))
     }
   },
+  worker: {
+    format: "es"
+  },
+  build: {
+    cssMinify: true,
+    cssCodeSplit: true
+  },
   server: {
     port: 3002,
     open: true
