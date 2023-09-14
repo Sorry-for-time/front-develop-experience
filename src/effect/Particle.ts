@@ -34,47 +34,45 @@ class Particle {
       "#9622c7",
       "#b44ae0",
       "#cd72f2",
+      "#b44ae0",
+      "#72a9f2",
+      "#537cb1",
+      "#3f2bad",
       "white"
     ];
     this.#color = this.#colors[Math.floor(Math.random() * this.#colors.length)];
   }
-  public draw(
-    context: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D
-  ) {
-    queueMicrotask(() => {
-      context.beginPath();
-      context.moveTo(this.#history[0].x, this.#history[0].y);
-      for (let i = 0; i < this.#history.length; i++) {
-        context.lineTo(this.#history[i].x, this.#history[i].y);
-      }
-      context.strokeStyle = this.#color;
-      context.stroke();
-    });
+  public draw(context: OffscreenCanvasRenderingContext2D): void {
+    context.beginPath();
+    context.moveTo(this.#history[0].x, this.#history[0].y);
+    for (let i = 0; i < this.#history.length; i++) {
+      context.lineTo(this.#history[i].x, this.#history[i].y);
+    }
+    context.strokeStyle = this.#color;
+    context.stroke();
   }
   public update(): void {
-    queueMicrotask(() => {
-      this.#timer--;
-      if (this.#timer >= 1) {
-        let x = Math.floor(this.#x / this.#effect.cellSize);
-        let y = Math.floor(this.#y / this.#effect.cellSize);
-        let index = y * this.#effect.cols + x;
-        this.#angle = this.#effect.flowField[index];
+    this.#timer--;
+    if (this.#timer >= 1) {
+      let x = Math.floor(this.#x / this.#effect.cellSize);
+      let y = Math.floor(this.#y / this.#effect.cellSize);
+      let index = y * this.#effect.cols + x;
+      this.#angle = this.#effect.flowField[index];
 
-        this.#speedX = Math.cos(this.#angle);
-        this.#speedY = Math.sin(this.#angle);
-        this.#x += this.#speedX * this.#speedModifier;
-        this.#y += this.#speedY * this.#speedModifier;
+      this.#speedX = Math.cos(this.#angle);
+      this.#speedY = Math.sin(this.#angle);
+      this.#x += this.#speedX * this.#speedModifier;
+      this.#y += this.#speedY * this.#speedModifier;
 
-        this.#history.push({ x: this.#x, y: this.#y });
-        if (this.#history.length > this.#maxLength) {
-          this.#history.shift();
-        }
-      } else if (this.#history.length > 1) {
+      this.#history.push({ x: this.#x, y: this.#y });
+      if (this.#history.length > this.#maxLength) {
         this.#history.shift();
-      } else {
-        this.reset();
       }
-    });
+    } else if (this.#history.length > 1) {
+      this.#history.shift();
+    } else {
+      this.reset();
+    }
   }
   public reset(): void {
     this.#x = Math.floor(Math.random() * this.#effect.width);

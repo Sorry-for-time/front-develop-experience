@@ -17,45 +17,15 @@ class LineScrollEffect {
   #flowField: Array<number>;
   #curve: number;
   #zoom: number;
-  #debug: boolean;
-  #uiAutoResizeFit: boolean;
-  #parent: HTMLElement;
+  debug: boolean;
 
   public get flowField(): Array<number> {
     return this.#flowField;
   }
 
-  public set uiResizeAutoFit(val: boolean) {
-    if (!val) {
-      window.visualViewport!.removeEventListener("resize", this.#updateUI);
-    }
-
-    if (val && !this.#uiAutoResizeFit) {
-      window.visualViewport!.addEventListener("resize", this.#updateUI);
-      this.#uiAutoResizeFit = val;
-    }
-  }
-
-  public get uiResizeAutoFit(): boolean {
-    return this.#uiAutoResizeFit;
-  }
-
-  public removeActive(): void {
-    if (this.#uiAutoResizeFit) {
-      window.visualViewport!.removeEventListener(
-        "resize",
-        this.#updateUI.bind(this)
-      );
-    }
-  }
-
-  public constructor(
-    readonly canvas: HTMLCanvasElement | OffscreenCanvas,
-    parent: HTMLDivElement,
-    autoFit: boolean = false
-  ) {
-    this.width = this.canvas.width;
-    this.height = this.canvas.height;
+  public constructor(readonly canvas: OffscreenCanvas) {
+    this.width = canvas.width;
+    this.height = canvas.height;
     this.cols = 0;
     this.rows = 0;
     this.particles = [];
@@ -64,24 +34,11 @@ class LineScrollEffect {
     this.#flowField = [];
     this.#curve = 6;
     this.#zoom = 0.01;
-    this.#debug = false;
-    this.#uiAutoResizeFit = autoFit;
-    this.init();
-    this.#parent = parent;
-
-    window.addEventListener("keydown", (e) => {
-      if (e.key === "d") this.#debug = !this.#debug;
-    });
-
-    if (this.#uiAutoResizeFit) {
-      window.visualViewport!.addEventListener("resize", this.#updateUI);
-    }
+    this.debug = false;
+    this.#init();
   }
 
-  #updateUI = (): void => {
-    this.resize(this.#parent.clientWidth, this.#parent.clientHeight);
-  };
-  init() {
+  #init(): void {
     // create flow field
     this.rows = Math.floor(this.height / this.cellSize);
     this.cols = Math.floor(this.width / this.cellSize);
@@ -100,9 +57,7 @@ class LineScrollEffect {
       this.particles.push(new Particle(this));
     }
   }
-  drawGrid(
-    context: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D
-  ) {
+  #drawGrid(context: OffscreenCanvasRenderingContext2D) {
     context.save();
     // context.strokeStyle = "line";
     context.lineWidth = 30;
@@ -120,21 +75,21 @@ class LineScrollEffect {
     }
     context.restore();
   }
-  resize(width: number, height: number) {
+  public resize(width: number, height: number): void {
+    this.width = width;
+    this.height = height;
     this.canvas.width = width;
     this.canvas.height = height;
-    this.width = this.canvas.width;
-    this.height = this.canvas.height;
-    this.init();
+
+    this.#init();
   }
-  render(
-    context: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D
-  ) {
-    if (this.#debug) this.drawGrid(context);
-    this.particles.forEach((particle) => {
+
+  public render(context: OffscreenCanvasRenderingContext2D): void {
+    if (this.debug) this.#drawGrid(context);
+    for (const particle of this.particles) {
       particle.draw(context);
       particle.update();
-    });
+    }
   }
 }
 
