@@ -59,6 +59,10 @@ const Layout = defineComponent({
       {
         name: "class-component-sample",
         desc: "class-component-sample"
+      },
+      {
+        name: "class-decorator-sample",
+        desc: "class-decorator-sample"
       }
     ]);
     /**
@@ -144,7 +148,9 @@ const Layout = defineComponent({
             {{
               default: ({ Component }: { Component: VNode }): JSX.Element => (
                 <Transition name="list">
-                  <KeepAlive max={64}>{Component}</KeepAlive>
+                  <KeepAlive exclude={["/class-component-sample"]}>
+                    {Component}
+                  </KeepAlive>
                 </Transition>
               )
             }}
