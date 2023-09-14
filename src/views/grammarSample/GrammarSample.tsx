@@ -1,12 +1,12 @@
+import { nanoid } from "nanoid";
 import {
+  Transition,
+  TransitionGroup,
   defineComponent,
   ref,
-  TransitionGroup,
-  type Ref,
-  Transition
+  type Ref
 } from "vue";
 import style from "./GrammarSample.module.scss";
-import { nanoid } from "nanoid";
 
 type Item = {
   key: string;
