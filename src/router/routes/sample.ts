@@ -36,7 +36,7 @@ const sampleRouteConfig: RouteRecordRaw[] = [
   {
     path: "/class-decorator-sample",
     name: "class-decorator-sample",
-    component: () => import("@/views/ClassDecoratorComponentSample.vue")
+    component: () => import("@/views/classDecoratorComponentSample/ClassDecoratorComponentSample")
   }
 ];
 
