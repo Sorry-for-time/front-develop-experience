@@ -61,9 +61,11 @@ self.onmessage = ({ data }: { data: ReceiveType }) => {
     if (lineScrollEffect instanceof LineScrollEffect) {
       switch (data as OperationSignal) {
         case "terminate":
+          console.log("check listenerFd");
           if (typeof listenerFd === "number") {
-            cancelIdleCallback(listenerFd);
-            // cancelAnimationFrame(listenerFd);
+            cancelAnimationFrame(listenerFd);
+            console.log("cancel animation!");
+            self.postMessage(0);
           }
           break;
         default:

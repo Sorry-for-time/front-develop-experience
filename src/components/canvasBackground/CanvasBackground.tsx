@@ -54,9 +54,6 @@ class CanvasBackgroundBase extends Vue {
     this.worker.postMessage(threadMsgConfig, {
       transfer: [offsetCanvas]
     });
-    setTimeout(() => {
-      console.log(offsetCanvas);
-    }, 1000);
 
     this.functor = (): void => {
       const { clientWidth, clientHeight } = wrapper;
@@ -73,9 +70,21 @@ class CanvasBackgroundBase extends Vue {
     if (this.functor) {
       window.visualViewport!.removeEventListener("resize", this.functor);
     }
-    // 清理线程
-    this.worker?.terminate();
-    console.log("terminate thread-worker!");
+    if (this.worker) {
+      // 发送动画清理信号
+      this.worker.postMessage("terminate");
+      this.worker.onmessage = ({ data }: MessageEvent<number>) => {
+        if (data === 0) {
+          // 终止线程
+          this.worker!.terminate();
+          console.log("terminate thread-worker!");
+        } else {
+          throw new TypeError("unknown thread terminate error");
+        }
+        // clear
+        this.worker = void 0;
+      };
+    }
   }
 }
 
