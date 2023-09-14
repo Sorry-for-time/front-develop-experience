@@ -1,3 +1,4 @@
+import { ClassComponentSample } from "@/views/classComponentSample/ClassComponentSample";
 import { HookSample } from "@/views/hookSample/HookSample";
 import type { RouteRecordRaw } from "vue-router";
 
@@ -26,6 +27,11 @@ const sampleRouteConfig: RouteRecordRaw[] = [
     path: "/computed-sample",
     name: "computed-sample",
     component: () => import("@/views/ComputedSample.vue")
+  },
+  {
+    path: "/class-component-sample",
+    name: "class-component-sample",
+    component: ClassComponentSample
   }
 ];
 

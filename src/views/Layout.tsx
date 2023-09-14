@@ -55,6 +55,10 @@ const Layout = defineComponent({
       {
         name: "not-exist",
         desc: "404 not -found"
+      },
+      {
+        name: "class-component-sample",
+        desc: "class-component-sample"
       }
     ]);
     /**
