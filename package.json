@@ -23,9 +23,11 @@
     "pinia": "^2.1.6",
     "reflect-metadata": "^0.1.13",
     "vue": "^3.3.4",
+    "vue-facing-decorator": "^3.0.2",
     "vue-router": "^4.2.4"
   },
   "devDependencies": {
+    "@babel/plugin-proposal-decorators": "^7.22.15",
     "@tsconfig/node18": "^18.2.0",
     "@types/node": "^18.17.5",
     "@vitejs/plugin-vue": "^4.3.1",
