@@ -1,4 +1,4 @@
-import localforage, { key } from "localforage";
+import localforage from "localforage";
 import { SignalPrefixEnum } from "./SignalPrefixEnum";
 
 export type DataTransferPacket<T = any> = {
@@ -18,6 +18,19 @@ export type WriteMsg<T = any> = {
   data: T;
 };
 
+export type WorkerMSG = Partial<{
+  name: string;
+  appCodeName: string;
+  appName: string;
+  language: string;
+  languages: string[];
+  onLine: boolean;
+  platform: string;
+  product: string;
+  deviceMemory: number;
+  hardwareConcurrency: number;
+}>;
+
 class MessageEventHandler {
   /**
    * 数据操作对象映射集
@@ -29,10 +42,45 @@ class MessageEventHandler {
   }
 
   /**
+   * 获取子线程环境的简单描述信息
+   *
+   * @returns 子线程环境简要描述信息
+   */
+  public get workerDetail(): WorkerMSG {
+    return {
+      name: self.name,
+      appCodeName: navigator.appCodeName,
+      appName: navigator.appName,
+      language: navigator.language,
+      languages: navigator.languages as any,
+      onLine: navigator.onLine,
+      platform: navigator.platform,
+      product: navigator.product,
+      deviceMemory: (navigator as any).deviceMemory,
+      hardwareConcurrency: navigator.hardwareConcurrency
+    };
+  }
+
+  /**
+   * 获取当前线程运行环境简要描述信息
+   *
+   * @param storeId 操作对象 id
+   */
+  #getWorkerDetail(storeId: string) {
+    const workerDetailPacket: DataTransferPacket<WorkerMSG> = {
+      header: SignalPrefixEnum.WORKER_DETAIL,
+      storeId: storeId,
+      payload: this.workerDetail
+    };
+    self.postMessage(workerDetailPacket);
+  }
+
+  /**
    * 初始化并创建指定名称的数据操作对象
+   *
    * @param storeId 数据对象 id
    */
-  #init(storeId: string) {
+  #init(storeId: string): void {
     try {
       if (!this.#storeOperationMap.has(storeId)) {
         const instance: LocalForage = localforage.createInstance({
@@ -47,6 +95,12 @@ class MessageEventHandler {
           storeId
         };
         self.postMessage(initSuccessPacket);
+        // 更新当前线程的名称
+        if (!self.name) {
+          self.name = storeId + " --- THREAD";
+        } else {
+          self.name = `${storeId}, ${self.name}`;
+        }
       } else {
         throw new TypeError("the storeObject already exists");
       }
@@ -219,6 +273,8 @@ class MessageEventHandler {
           break;
         case SignalPrefixEnum.DETAIL:
           this.#getStoreOptions(data.payload);
+        case SignalPrefixEnum.WORKER_DETAIL:
+          this.#getWorkerDetail(data.payload);
         default:
           break;
       }

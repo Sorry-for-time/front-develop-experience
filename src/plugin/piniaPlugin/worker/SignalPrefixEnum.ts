@@ -53,7 +53,11 @@ enum SignalPrefixEnum {
   /**
    * 获取数据操作对象配置信息失败
    */
-  GET_DETAIL_FAIL = 12
+  GET_DETAIL_FAIL = 12,
+  /**
+   * 获取子线程环境简单描述信息
+   */
+  WORKER_DETAIL = 13
 }
 
 export { SignalPrefixEnum };
