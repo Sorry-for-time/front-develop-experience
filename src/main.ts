@@ -11,11 +11,15 @@ import { router } from "@/router/router";
 import { createPinia } from "pinia";
 import { createApp } from "vue";
 
+const { plugin, pluginStatus } = createPiniaIndexedDBPersistPlugin(2);
+
 createApp(App)
   .directive("draggable", vDraggable)
   .use(router)
-  .use(createPinia().use(createPiniaIndexedDBPersistPlugin()))
+  .use(createPinia().use(plugin))
   .mount("#app");
 
 const loadingBarHooks = useLoadingBar(document.body);
-export { loadingBarHooks };
+
+export { loadingBarHooks, pluginStatus };
+
