@@ -1,12 +1,12 @@
 import { defineStore } from "pinia";
 import { StoreIdEnum } from "./StoreIdEnum";
 
-const useCounterStore = defineStore(StoreIdEnum.COUNTER, {
+const useListStore = defineStore(StoreIdEnum.LIST, {
   state() {
     return {
-      count: 0
+      list: [1, 2, 3, 4]
     };
   }
 });
 
-export { useCounterStore };
+export { useListStore };

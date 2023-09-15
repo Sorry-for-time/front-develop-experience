@@ -1,5 +1,6 @@
-const enum StoreIdEnum {
-  COUNTER = "COUNTER-STORE"
+enum StoreIdEnum {
+  COUNTER = "COUNTER_STORE",
+  LIST = "LIST_STORE"
 }
 
 export { StoreIdEnum };
