@@ -1,7 +1,13 @@
 import { Aspect } from "@/decorators/aop";
 import { UseDebounce, UseThrottle } from "@/decorators/performanceUtil";
+import { useCounterStore } from "@/stores/useCounter";
+import { useListStore } from "@/stores/useListStore";
+import { TransitionGroup } from "vue";
 import { Component, Vue, toNative } from "vue-facing-decorator";
 import styled, { ThemeProvider } from "vue3-styled-components";
+
+const counterStore = useCounterStore();
+const listStore = useListStore();
 
 const Wrapper = styled.div`
   width: fit-content;
@@ -16,6 +22,14 @@ const ColorSpan = styled.span`
   color: white;
 `;
 
+const ColorLi = styled.li`
+  width: fit-content;
+  padding: 3px;
+  margin: 5px 0;
+  border-radius: 3px;
+  box-shadow: 0 0 2px white;
+`;
+
 const ClassSampleDecoratorRender = (
   that: ClassDecoratorSample
 ): JSX.Element => {
@@ -28,11 +42,11 @@ const ClassSampleDecoratorRender = (
     >
       <Wrapper>
         <button class={["st-btn"]} onClick={that.increment}>
-          throttle increment(600ms)
+          @throttle(600) increment
         </button>
         <ColorSpan>{that.count}</ColorSpan>
         <button class={["st-btn"]} onClick={that.decrement}>
-          debounce decrement(1000ms)
+          @debounce(1000ms) decrement
         </button>
         <br />
         <div
@@ -45,6 +59,14 @@ const ClassSampleDecoratorRender = (
           <div class={["color-panel", "stroked"]}>{that.hintStr}</div>
           <div class={["color-pane", "fill-fade"]}>{that.hintStr}</div>
         </div>
+
+        {
+          <TransitionGroup tag="ol" name="list">
+            {listStore.list.map((item) => (
+              <ColorLi key={item}>{item}</ColorLi>
+            ))}
+          </TransitionGroup>
+        }
       </Wrapper>
     </ThemeProvider>
   );
@@ -55,11 +77,8 @@ const ClassSampleDecoratorRender = (
   render: ClassSampleDecoratorRender
 })
 class ClassDecoratorSample extends Vue {
-  public count: number = 0;
-
-  @UseThrottle(600)
-  public increment(): void {
-    this.count++;
+  public get count() {
+    return counterStore.count;
   }
 
   /**
@@ -69,14 +88,23 @@ class ClassDecoratorSample extends Vue {
     return this._hint();
   }
 
+  @UseThrottle(600)
+  public increment(): void {
+    counterStore.count++;
+    const list = listStore.list;
+    list.splice(Math.floor(Math.random() * list.length), 0, Math.random());
+  }
+
   @UseDebounce(1000)
   @Aspect({
-    before: () => console.log("before"),
-    after: () => console.log("after"),
-    finally: () => console.log("finally")
+    before: () => console.log("decrement before"),
+    after: () => console.log("decrement after"),
+    finally: () => console.log("decrement finally")
   })
   public decrement(): void {
-    this.count--;
+    counterStore.count--;
+    const list = listStore.list;
+    list.splice(Math.floor(Math.random() * list.length), 1);
   }
 
   @Aspect({
