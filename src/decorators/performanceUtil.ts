@@ -66,8 +66,10 @@ function UseThrottle(
         options.methods[key] = new Proxy(originMethod!, {
           apply(target, thisArg, argArray) {
             if (immediate) {
+              locker = true;
               setTimeout(() => {
                 Reflect.apply(target, thisArg, argArray);
+                locker = false;
               }, 0);
               immediate = false;
             }
