@@ -22,4 +22,3 @@ createApp(App)
 const loadingBarHooks = useLoadingBar(document.body);
 
 export { loadingBarHooks, pluginStatus };
-
