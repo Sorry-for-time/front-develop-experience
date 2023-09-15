@@ -12,7 +12,7 @@ import type {
 } from "./worker/MessageEventHandler";
 import { SignalPrefixEnum } from "./worker/SignalPrefixEnum";
 
-export type PersistPluginStatus = {
+export type PersistPluginStatus = Readonly<{
   /**
    * 总线程数
    */
@@ -22,14 +22,14 @@ export type PersistPluginStatus = {
    */
   workers: Array<Worker>;
   /**
-   * 注册的 indexedDB 操作对象配置信息(受限于异步机制, 该值可能延迟加载)
+   * 注册的 indexedDB 操作对象配置信息(受限于异步机制, 该值可能延迟更新)
    */
   registerStoreOptions: Array<LocalForageOptions>;
   /**
-   * 注册的线程工作环境简要描述信息列表(受限于异步机制, 该值可能延迟加载)
+   * 注册的线程工作环境简要描述信息列表(受限于异步机制, 该值可能延迟更新)
    */
   workerEnvironmentSimpleDesc: Array<WorkerMSG>;
-};
+}>;
 
 /**
  * 创建 pinia-indexedDB-webWorker 持久化插件
@@ -42,9 +42,7 @@ const createPiniaIndexedDBPersistPlugin = (workerNum: number = 1) => {
   if (workerNum > maxConcurrency || workerNum < 0) {
     throw TypeError(`the workerNum: ${workerNum} is out of range`);
   }
-
   const workers: Array<Worker> = [];
-
   const pluginStatus: PersistPluginStatus = {
     workerNum,
     workers,
@@ -64,7 +62,8 @@ const createPiniaIndexedDBPersistPlugin = (workerNum: number = 1) => {
   return {
     /**
      * pinia-indexedDB-webWorker 持久化插件
-     * @param context  上下文环境
+     *
+     * @param context 上下文环境
      */
     plugin: (
       context: PiniaPluginContext
@@ -78,9 +77,9 @@ const createPiniaIndexedDBPersistPlugin = (workerNum: number = 1) => {
         header: SignalPrefixEnum.INIT,
         payload: store.$id
       };
-      // 初始化 webworker 线程
+      // 初始化 webWorker 线程
       Promise.resolve(initConfig)
-        // 通知子线程进行初始化
+        // 通知子线程进行数据操作对象初始化
         .then((res) => {
           dataTransferWorker.postMessage(res);
           return new Promise((resolve, reject) => {
@@ -224,7 +223,7 @@ const createPiniaIndexedDBPersistPlugin = (workerNum: number = 1) => {
         });
     },
     /**
-     * 插件内置状态信息
+     * 插件状态信息
      */
     pluginStatus
   };
