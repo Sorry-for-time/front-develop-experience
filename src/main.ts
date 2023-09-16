@@ -11,7 +11,7 @@ import { router } from "@/router/router";
 import { createPinia } from "pinia";
 import { createApp } from "vue";
 
-const { plugin, pluginStatus } = createPiniaIndexedDBPersistPlugin(2);
+const { plugin, pluginStatus } = createPiniaIndexedDBPersistPlugin(2, true);
 
 createApp(App)
   .directive("draggable", vDraggable)
