@@ -1,9 +1,12 @@
+import {
+  recursiveReplaceValue,
+  unwrapReactiveOrRefObj
+} from "@/util/reactiveUtil";
 import type {
   PiniaCustomProperties,
   PiniaCustomStateProperties,
   PiniaPluginContext
 } from "pinia";
-import { toRaw } from "vue";
 import StorageWorker from "./storageWorker?worker";
 import type {
   DataTransferPacket,
@@ -51,20 +54,23 @@ export type PersistPluginStatus = Readonly<{
 }>;
 
 /**
- * 创建 pinia-indexedDB-webWorker 持久化插件
+ * 创建 pinia-indexedDB-webWorker 持久化插件以及导出插件配置信息
  *
- * @param workerNum
- * @param storageOptions 支持的存储驱动, 参见 @see LocalForage
- * @returns indexedDB 持久化插件
+ * @param workerNum 使用的子线程数(所有 store 使用取模尽可能平均配使用已存在的所有 worker)
+ * @param persistReadOnly
+ * @returns indexedDB
  */
-const createPiniaIndexedDBPersistPlugin = (workerNum: number = 1) => {
+const createPiniaIndexedDBPersistPlugin = (
+  workerNum: number = 1,
+  persistReadOnly: boolean
+) => {
   const maxConcurrency: number = navigator.hardwareConcurrency;
   if (workerNum > maxConcurrency || workerNum < 0) {
     throw TypeError(`the workerNum: ${workerNum} is out of range`);
   }
   const workers: Array<Worker> = [];
   const pluginStatus: PersistPluginStatus = {
-    workerNum,
+    workerNum: workerNum,
     workers,
     registerStoreOptions: [],
     workerEnvironmentSimpleDesc: [],
@@ -177,10 +183,12 @@ const createPiniaIndexedDBPersistPlugin = (workerNum: number = 1) => {
             );
           });
         })
-        .then((res) => {
+        .then((res: any) => {
           // 写入数据并订阅数据更新器
-          if (typeof res !== "undefined") {
-            store.$state = res as any;
+          if (typeof res !== "undefined" && res !== null) {
+            store.$patch((state) => {
+              recursiveReplaceValue(state, res, persistReadOnly);
+            });
           }
           const finish: number = performance.now();
           pluginStatus.loadStatus.push({
@@ -188,13 +196,14 @@ const createPiniaIndexedDBPersistPlugin = (workerNum: number = 1) => {
             start,
             finish
           });
-          store.$subscribe((_mutation, state) => {
+
+          store.$subscribe((mutation, state) => {
             const currentDataPacket: DataTransferPacket<WriteMsg> = {
               header: SignalPrefixEnum.WRITE,
               payload: {
                 storeId: store.$id,
                 key: "state",
-                data: toRaw(state)
+                data: unwrapReactiveOrRefObj(state, persistReadOnly)
               }
             };
             dataTransferWorker.postMessage(currentDataPacket);
