@@ -90,9 +90,9 @@
 </template>
 
 <script setup lang="ts">
+import { DialogMaskProvider } from "@/components/dialogMaskProvider/DialogMaskProvider";
 import { nanoid } from "nanoid";
 import { computed, ref, type Ref } from "vue";
-import { DialogMaskProvider } from "@/components/dialogMaskProvider/DialogMaskProvider";
 
 const cargoName: Ref<string> = ref("");
 const num: Ref<number> = ref(0);
