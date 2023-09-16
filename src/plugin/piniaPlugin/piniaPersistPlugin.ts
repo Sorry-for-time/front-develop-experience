@@ -29,12 +29,32 @@ export type PersistPluginStatus = Readonly<{
    * 注册的线程工作环境简要描述信息列表(受限于异步机制, 该值可能延迟更新)
    */
   workerEnvironmentSimpleDesc: Array<WorkerMSG>;
+  /**
+   * store 持久化数据加载状态信息
+   */
+  loadStatus: Array<{
+    /**
+     * store 唯一标识
+     * @see https://developer.mozilla.org/zh-CN/docs/Web/API/Performance/now
+     */
+    storeId: string;
+    /**
+     * 加载起始时间戳记录
+     * @see https://developer.mozilla.org/zh-CN/docs/Web/API/Performance/now
+     */
+    start: number;
+    /**
+     * 加载结束时间戳
+     */
+    finish: number;
+  }>;
 }>;
 
 /**
  * 创建 pinia-indexedDB-webWorker 持久化插件
  *
  * @param workerNum
+ * @param storageOptions 支持的存储驱动, 参见 @see LocalForage
  * @returns indexedDB 持久化插件
  */
 const createPiniaIndexedDBPersistPlugin = (workerNum: number = 1) => {
@@ -47,7 +67,8 @@ const createPiniaIndexedDBPersistPlugin = (workerNum: number = 1) => {
     workerNum,
     workers,
     registerStoreOptions: [],
-    workerEnvironmentSimpleDesc: []
+    workerEnvironmentSimpleDesc: [],
+    loadStatus: []
   };
 
   for (let i: number = 0; i < workerNum; i++) {
@@ -77,6 +98,7 @@ const createPiniaIndexedDBPersistPlugin = (workerNum: number = 1) => {
         header: SignalPrefixEnum.INIT,
         payload: store.$id
       };
+      const start: number = performance.now();
       // 初始化 webWorker 线程
       Promise.resolve(initConfig)
         // 通知子线程进行数据操作对象初始化
@@ -160,6 +182,12 @@ const createPiniaIndexedDBPersistPlugin = (workerNum: number = 1) => {
           if (typeof res !== "undefined") {
             store.$state = res as any;
           }
+          const finish: number = performance.now();
+          pluginStatus.loadStatus.push({
+            storeId: store.$id,
+            start,
+            finish
+          });
           store.$subscribe((_mutation, state) => {
             const currentDataPacket: DataTransferPacket<WriteMsg> = {
               header: SignalPrefixEnum.WRITE,
