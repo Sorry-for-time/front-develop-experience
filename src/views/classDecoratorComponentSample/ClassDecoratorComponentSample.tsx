@@ -1,10 +1,15 @@
 import { Aspect } from "@/decorators/aop";
 import { UseDebounce, UseThrottle } from "@/decorators/performanceUtil";
+import { pluginStatus } from "@/main";
 import { useCounterStore } from "@/stores/useCounter";
 import { useListStore } from "@/stores/useListStore";
 import { TransitionGroup } from "vue";
 import { Component, Vue, toNative } from "vue-facing-decorator";
 import styled, { ThemeProvider } from "vue3-styled-components";
+
+setTimeout(() => {
+  console.log(pluginStatus);
+}, 1000);
 
 const counterStore = useCounterStore();
 const listStore = useListStore();
