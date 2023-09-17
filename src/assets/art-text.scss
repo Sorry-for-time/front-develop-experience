@@ -48,3 +48,19 @@
     mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.7), transparent 70%);
   }
 }
+
+.color-text {
+  background: -webkit-linear-gradient(-12deg, #69dd5e, #5967eb);
+  background-clip: text;
+  color: transparent;
+  animation: bgc-scroll linear 3s infinite;
+
+  @keyframes bgc-scroll {
+    from {
+      filter: hue-rotate(0deg);
+    }
+    to {
+      filter: hue-rotate(360deg);
+    }
+  }
+}
