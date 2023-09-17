@@ -1,8 +1,16 @@
 import { useCanvasImageStore } from "@/stores/useCanvasImageStore";
 import { defineAsyncComponent } from "vue";
-import { Component, Vue, toNative } from "vue-facing-decorator";
-import style from "./CanvasBackground.module.scss";
-import BackgroundAnimationWorker from "./CanvasBackground.worker?worker";
+import {
+  Component,
+  Prop,
+  Ref,
+  Setup,
+  TSX,
+  Vue,
+  toNative
+} from "vue-facing-decorator";
+import { CanvasBackgroundRender } from "./CanvasBackgroundRender";
+import BackgroundAnimationWorker from "./worker//CanvasBackground.worker?worker";
 import type {
   CanvasImageMSG,
   CanvasWorkerPacket,
@@ -11,14 +19,8 @@ import type {
 } from "./worker/CanvasBackgroundListener";
 import { CanvasBackGroundSignalPrefix } from "./worker/constant";
 
-const CanvasBackgroundRender = (that: CanvasBackgroundBase): JSX.Element => {
-  return (
-    <div class={style["background-canvas-wrapper"]}>
-      <div ref="wrapper" class={style["canvas-wrapper"]}>
-        <canvas ref="canvas" />
-      </div>
-    </div>
-  );
+type CanvasBackgroundBaseProps = {
+  flushWait: number;
 };
 
 /**
@@ -28,32 +30,58 @@ const CanvasBackgroundRender = (that: CanvasBackgroundBase): JSX.Element => {
   name: "CanvasBackground",
   render: CanvasBackgroundRender
 })
-class CanvasBackgroundBase extends Vue {
-  private imageStore = useCanvasImageStore();
+export class CanvasBackgroundBase extends TSX<CanvasBackgroundBaseProps>()(
+  Vue
+) {
+  @Setup(() => useCanvasImageStore())
+  private readonly imageStore!: ReturnType<typeof useCanvasImageStore>;
+
+  @Ref
+  private readonly wrapper!: HTMLDivElement;
+
+  @Ref("canvas")
+  private readonly originCanvas!: HTMLCanvasElement;
+
   /**
    * 监听器回调记录
    */
   private viewportResizeListener: (() => void) | undefined;
+
   /**
    * 专用工背景绘制工作者线程
    */
   private worker!: Worker;
+
+  /**
+   * 图象数据传输监听回调
+   */
   private imageListen:
     | (({ data }: MessageEvent<CanvasWorkerPacket>) => void)
     | undefined;
+
+  /**
+   * 定时器返回 id
+   */
   private timer: number | undefined;
+
+  /**
+   * 更新 imageStore 数据间隔时间
+   */
+  @Prop({
+    type: Number,
+    default: 1000,
+    validator: (value: any): boolean => (value >= 1000 ? true : false)
+  })
+  private readonly flushWait!: number;
 
   public mounted(): void {
     console.log("mounted!");
-    const originCanvas = this.$refs.canvas as HTMLCanvasElement;
-    const wrapper = this.$refs.wrapper as HTMLDivElement;
-
-    const { clientWidth, clientHeight } = wrapper;
-    originCanvas.width = clientWidth;
-    originCanvas.height = clientHeight;
+    const { clientWidth, clientHeight } = this.wrapper;
+    this.originCanvas.width = clientWidth;
+    this.originCanvas.height = clientHeight;
 
     const offsetCanvas: OffscreenCanvas =
-      originCanvas.transferControlToOffscreen();
+      this.originCanvas.transferControlToOffscreen();
     this.worker = new BackgroundAnimationWorker();
 
     Promise.resolve(offsetCanvas)
@@ -90,7 +118,7 @@ class CanvasBackgroundBase extends Vue {
         };
         this.timer = setInterval(() => {
           worker.postMessage(requestImagDataPacket);
-        }, 1000);
+        }, this.flushWait);
 
         this.imageListen = ({ data }: MessageEvent<CanvasWorkerPacket>) => {
           if (data.header === CanvasBackGroundSignalPrefix.GET_IMAGE_SUCCESS) {
@@ -105,7 +133,7 @@ class CanvasBackgroundBase extends Vue {
         worker.addEventListener("message", this.imageListen);
 
         this.viewportResizeListener = (): void => {
-          const { clientWidth, clientHeight } = wrapper;
+          const { clientWidth, clientHeight } = this.wrapper;
           const resizeConfigPacket: CanvasWorkerPacket<ResizeCanvasConfig> = {
             header: CanvasBackGroundSignalPrefix.RESIZE,
             payload: {
