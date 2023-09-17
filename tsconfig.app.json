@@ -13,6 +13,7 @@
     "baseUrl": ".",
     "jsx": "preserve",
     "jsxImportSource": "vue",
+    "lib": ["ESNext", "DOM", "WebWorker", "ScriptHost"],
     "paths": {
       "@/*": ["./src/*"]
     },
