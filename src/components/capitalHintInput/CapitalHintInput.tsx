@@ -1,4 +1,3 @@
-import "@/assets/Transition.scss";
 import { Transition, defineComponent, ref, type PropType, type Ref } from "vue";
 import style from "./CapitalHintInput.module.scss";
 

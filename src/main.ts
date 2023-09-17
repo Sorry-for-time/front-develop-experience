@@ -1,6 +1,4 @@
-import "@/assets/Transition.scss";
-import "@/assets/art-text.scss";
-import "@/assets/main.scss";
+import "@/assets/style/main.scss";
 
 import { vDraggable } from "@/directives/vDraggable";
 import { useLoadingBar } from "@/hooks/useLoadingBar";
