@@ -57,12 +57,14 @@ export type PersistPluginStatus = Readonly<{
  * 创建 pinia-indexedDB-webWorker 持久化插件以及导出插件配置信息
  *
  * @param workerNum 使用的子线程数(所有 store 使用取模尽可能平均配使用已存在的所有 worker)
- * @param persistReadOnly
+ * @param persistReadOnly 是否序列化并保存/加载只读数据 @see recursiveReplaceValue, @see unwrapReactiveOrRefObj
+ * @param excludes 不进行序列化的子模块名称列表
  * @returns indexedDB
  */
 const createPiniaIndexedDBPersistPlugin = (
   workerNum: number = 1,
-  persistReadOnly: boolean
+  persistReadOnly: boolean,
+  excludes: Array<string> = []
 ) => {
   const maxConcurrency: number = navigator.hardwareConcurrency;
   if (workerNum > maxConcurrency || workerNum < 0) {
@@ -95,169 +97,175 @@ const createPiniaIndexedDBPersistPlugin = (
     plugin: (
       context: PiniaPluginContext
     ): Partial<PiniaCustomProperties & PiniaCustomStateProperties> | void => {
-      const { store } = context;
-      const dataTransferWorker: Worker = workers[selectWorkerLocation];
-      // 更新下一个 store 使用的 worker 下标
-      selectWorkerLocation = (selectWorkerLocation + 1) % workers.length;
-      // 初始化配置
-      const initConfig: DataTransferPacket = {
-        header: SignalPrefixEnum.INIT,
-        payload: store.$id
-      };
-      const start: number = performance.now();
-      // 初始化 webWorker 线程
-      Promise.resolve(initConfig)
-        // 通知子线程进行数据操作对象初始化
-        .then((res) => {
-          dataTransferWorker.postMessage(res);
-          return new Promise((resolve, reject) => {
-            dataTransferWorker.addEventListener(
-              "message",
-              function init({ data }: MessageEvent<DataTransferPacket>): void {
-                if (
-                  data.header === SignalPrefixEnum.INIT_SUCCESS &&
-                  data.storeId === store.$id
-                ) {
-                  resolve(data.header);
-                  // clean up
-                  dataTransferWorker.removeEventListener("message", init);
-                } else if (
-                  data.header === SignalPrefixEnum.INIT_FAILURE &&
-                  data.storeId === store.$id
-                ) {
-                  reject({
-                    description: `web-worker's indexeddb init fail`,
-                    reason: data.payload
-                  });
-                  // clean up
-                  dataTransferWorker.removeEventListener("message", init);
-                }
-              }
-            );
-          });
-        })
-        // 发送获取已存在数据请求
-        .then(() => {
-          const requestPersistPacket: DataTransferPacket = {
-            header: SignalPrefixEnum.QUERY,
-            payload: {
-              storeId: store.$id,
-              key: "state"
-            }
-          };
-          dataTransferWorker.postMessage(requestPersistPacket);
-        })
-        .then(() => {
-          // 处理请求数据的结果
-          return new Promise((resolve, reject) => {
-            dataTransferWorker.addEventListener(
-              "message",
-              function requestExistsData({
-                data
-              }: MessageEvent<DataTransferPacket>): void {
-                if (
-                  data.header === SignalPrefixEnum.QUERY_SUCCESS &&
-                  data.storeId === store.$id
-                ) {
-                  resolve(data.payload);
-                  // clean up
-                  dataTransferWorker.removeEventListener(
-                    "message",
-                    requestExistsData
-                  );
-                } else if (
-                  data.header === SignalPrefixEnum.QUERY_FAIL &&
-                  data.storeId === store.$id
-                ) {
-                  reject({
-                    description: "can not query default data",
-                    reason: data.payload
-                  });
-                  // clean up
-                  dataTransferWorker.removeEventListener(
-                    "message",
-                    requestExistsData
-                  );
-                }
-              }
-            );
-          });
-        })
-        .then((res: any) => {
-          // 写入数据并订阅数据更新器
-          if (typeof res !== "undefined" && res !== null) {
-            store.$patch((state) => {
-              recursiveReplaceValue(state, res, persistReadOnly);
-            });
-          }
-          const finish: number = performance.now();
-          pluginStatus.loadStatus.push({
-            storeId: store.$id,
-            start,
-            finish
-          });
+      // 只注册不在排除名单外的子模块
 
-          store.$subscribe((mutation, state) => {
-            const currentDataPacket: DataTransferPacket<WriteMsg> = {
-              header: SignalPrefixEnum.WRITE,
+      if (!excludes.includes(context.store.$id)) {
+        const { store } = context;
+        const dataTransferWorker: Worker = workers[selectWorkerLocation];
+        // 更新下一个 store 使用的 worker 下标
+        selectWorkerLocation = (selectWorkerLocation + 1) % workers.length;
+        // 初始化配置
+        const initConfig: DataTransferPacket = {
+          header: SignalPrefixEnum.INIT,
+          payload: store.$id
+        };
+        const start: number = performance.now();
+        // 初始化 webWorker 线程
+        Promise.resolve(initConfig)
+          // 通知子线程进行数据操作对象初始化
+          .then((res) => {
+            dataTransferWorker.postMessage(res);
+            return new Promise((resolve, reject) => {
+              dataTransferWorker.addEventListener(
+                "message",
+                function init({
+                  data
+                }: MessageEvent<DataTransferPacket>): void {
+                  if (
+                    data.header === SignalPrefixEnum.INIT_SUCCESS &&
+                    data.storeId === store.$id
+                  ) {
+                    resolve(data.header);
+                    // clean up
+                    dataTransferWorker.removeEventListener("message", init);
+                  } else if (
+                    data.header === SignalPrefixEnum.INIT_FAILURE &&
+                    data.storeId === store.$id
+                  ) {
+                    reject({
+                      description: `web-worker's indexeddb init fail`,
+                      reason: data.payload
+                    });
+                    // clean up
+                    dataTransferWorker.removeEventListener("message", init);
+                  }
+                }
+              );
+            });
+          })
+          // 发送获取已存在数据请求
+          .then(() => {
+            const requestPersistPacket: DataTransferPacket = {
+              header: SignalPrefixEnum.QUERY,
               payload: {
                 storeId: store.$id,
-                key: "state",
-                data: unwrapReactiveOrRefObj(state, persistReadOnly)
+                key: "state"
               }
             };
-            dataTransferWorker.postMessage(currentDataPacket);
-          });
-        })
-        .finally(() => {
-          console.log(`${store.$id} init done...`);
-          const requestWorkerDetailPacket: DataTransferPacket<string> = {
-            payload: store.$id,
-            header: SignalPrefixEnum.WORKER_DETAIL
-          };
+            dataTransferWorker.postMessage(requestPersistPacket);
+          })
+          .then(() => {
+            // 处理请求数据的结果
+            return new Promise((resolve, reject) => {
+              dataTransferWorker.addEventListener(
+                "message",
+                function requestExistsData({
+                  data
+                }: MessageEvent<DataTransferPacket>): void {
+                  if (
+                    data.header === SignalPrefixEnum.QUERY_SUCCESS &&
+                    data.storeId === store.$id
+                  ) {
+                    resolve(data.payload);
+                    // clean up
+                    dataTransferWorker.removeEventListener(
+                      "message",
+                      requestExistsData
+                    );
+                  } else if (
+                    data.header === SignalPrefixEnum.QUERY_FAIL &&
+                    data.storeId === store.$id
+                  ) {
+                    reject({
+                      description: "can not query default data",
+                      reason: data.payload
+                    });
+                    // clean up
+                    dataTransferWorker.removeEventListener(
+                      "message",
+                      requestExistsData
+                    );
+                  }
+                }
+              );
+            });
+          })
+          .then((res: any) => {
+            // 写入数据并订阅数据更新器
+            if (typeof res !== "undefined" && res !== null) {
+              store.$patch((state) => {
+                recursiveReplaceValue(state, res, persistReadOnly);
+              });
+            }
+            const finish: number = performance.now();
+            pluginStatus.loadStatus.push({
+              storeId: store.$id,
+              start,
+              finish
+            });
 
-          dataTransferWorker.postMessage(requestWorkerDetailPacket);
-          dataTransferWorker.addEventListener(
-            "message",
-            function onReportWorkerDetail({
-              data
-            }: MessageEvent<DataTransferPacket>) {
-              if (
-                data.header === SignalPrefixEnum.WORKER_DETAIL &&
-                store.$id === data.storeId
-              ) {
-                pluginStatus.workerEnvironmentSimpleDesc.push(data.payload);
-                dataTransferWorker.removeEventListener(
-                  "message",
-                  onReportWorkerDetail
-                );
+            store.$subscribe((mutation, state) => {
+              const currentDataPacket: DataTransferPacket<WriteMsg> = {
+                header: SignalPrefixEnum.WRITE,
+                payload: {
+                  storeId: store.$id,
+                  key: "state",
+                  data: unwrapReactiveOrRefObj(state, persistReadOnly)
+                }
+              };
+              dataTransferWorker.postMessage(currentDataPacket);
+            });
+          })
+          .finally(() => {
+            console.log(`${store.$id} init done...`);
+            const requestWorkerDetailPacket: DataTransferPacket<string> = {
+              payload: store.$id,
+              header: SignalPrefixEnum.WORKER_DETAIL
+            };
+
+            dataTransferWorker.postMessage(requestWorkerDetailPacket);
+            dataTransferWorker.addEventListener(
+              "message",
+              function onReportWorkerDetail({
+                data
+              }: MessageEvent<DataTransferPacket>) {
+                if (
+                  data.header === SignalPrefixEnum.WORKER_DETAIL &&
+                  store.$id === data.storeId
+                ) {
+                  pluginStatus.workerEnvironmentSimpleDesc.push(data.payload);
+                  dataTransferWorker.removeEventListener(
+                    "message",
+                    onReportWorkerDetail
+                  );
+                }
               }
-            }
-          );
-          const getStorageOptionsPacket: DataTransferPacket = {
-            header: SignalPrefixEnum.DETAIL,
-            payload: store.$id
-          };
-          dataTransferWorker.postMessage(getStorageOptionsPacket);
-          dataTransferWorker.addEventListener(
-            "message",
-            function onReportStorageOptions({
-              data
-            }: MessageEvent<DataTransferPacket>) {
-              if (
-                data.header === SignalPrefixEnum.GET_DETAIL_SUCCESS &&
-                store.$id === data.storeId
-              ) {
-                pluginStatus.registerStoreOptions.push(data.payload);
-                // clean up
-                dataTransferWorker.removeEventListener(
-                  "message",
-                  onReportStorageOptions
-                );
+            );
+            const getStorageOptionsPacket: DataTransferPacket = {
+              header: SignalPrefixEnum.DETAIL,
+              payload: store.$id
+            };
+            dataTransferWorker.postMessage(getStorageOptionsPacket);
+            dataTransferWorker.addEventListener(
+              "message",
+              function onReportStorageOptions({
+                data
+              }: MessageEvent<DataTransferPacket>) {
+                if (
+                  data.header === SignalPrefixEnum.GET_DETAIL_SUCCESS &&
+                  store.$id === data.storeId
+                ) {
+                  pluginStatus.registerStoreOptions.push(data.payload);
+                  // clean up
+                  dataTransferWorker.removeEventListener(
+                    "message",
+                    onReportStorageOptions
+                  );
+                }
               }
-            }
-          );
-        });
+            );
+          });
+      }
     },
     /**
      * 插件状态信息
