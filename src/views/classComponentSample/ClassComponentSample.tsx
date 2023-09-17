@@ -8,7 +8,7 @@ const ClassComponentSample = defineComponent({
     return (
       <div class={[style["canvas-bgc-outer-wrapper"]]}>
         <div class={[style["relative-mount"]]}>
-          <CanvasBackground />
+          <CanvasBackground flushWait={5000} />
         </div>
       </div>
     );
