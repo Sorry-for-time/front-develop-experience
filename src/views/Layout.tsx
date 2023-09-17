@@ -1,17 +1,17 @@
-import { routes, type RouteDesc } from "@/assets/routes/routeList";
+import { pageLinks, type RouteDesc } from "@/assets/routes/linkList";
 import {
-  KeepAlive,
-  Transition,
   computed,
   defineComponent,
+  KeepAlive,
   ref,
+  Transition,
   type Ref,
   type VNode
 } from "vue";
 import type { Router } from "vue-router";
 import { RouterView, useRouter } from "vue-router";
-import style from "./Layout.module.scss";
 import { ClassComponentSample } from "./classComponentSample/ClassComponentSample";
+import style from "./Layout.module.scss";
 
 const Layout = defineComponent({
   setup() {
@@ -22,7 +22,7 @@ const Layout = defineComponent({
     /**
      * 示例路由展示描述列表
      */
-    const exampleLinkList: Ref<Array<RouteDesc>> = ref(routes);
+    const exampleLinkList: Ref<Array<RouteDesc>> = ref(pageLinks);
     /**
      * 链接随机颜色列表
      */
