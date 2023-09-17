@@ -16,14 +16,20 @@
   border-bottom: 1px solid #4c4d4f;
   background-image: radial-gradient(transparent 1px, #141414 1px);
   background-size: 4px 4px;
-  backdrop-filter: saturate(150%) blur(5px);
+  backdrop-filter: saturate(150%) blur(6px);
+
+  @media screen and (max-width: 1400px) {
+    a {
+      font-size: 14px;
+    }
+  }
 }
 
 .route-switch {
   position: relative;
   background: scroll no-repeat
     linear-gradient(to bottom, rgba(2, 2, 2, 0.89), rgba(0, 4, 66, 0.397));
-  backdrop-filter: blur(18px) saturate(50%);
+  backdrop-filter: blur(12px) saturate(60%);
 }
 
 .fixed-route {
