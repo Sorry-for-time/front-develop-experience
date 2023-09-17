@@ -1,4 +1,3 @@
-import { ClassComponentSample } from "@/views/classComponentSample/ClassComponentSample";
 import { HookSample } from "@/views/hookSample/HookSample";
 import type { RouteRecordRaw } from "vue-router";
 
@@ -29,14 +28,18 @@ const sampleRouteConfig: RouteRecordRaw[] = [
     component: () => import("@/views/ComputedSample.vue")
   },
   {
-    path: "/class-component-sample",
-    name: "class-component-sample",
-    component: ClassComponentSample
-  },
-  {
     path: "/class-decorator-sample",
     name: "class-decorator-sample",
-    component: () => import("@/views/classDecoratorComponentSample/ClassDecoratorComponentSample")
+    component: () =>
+      import(
+        "@/views/classDecoratorComponentSample/ClassDecoratorComponentSample"
+      )
+  },
+  {
+    path: "/binary-persist-test",
+    name: "binary-persist-test",
+    component: () =>
+      import("@/views/imagePersistTest/ImagePersistTestSample.vue")
   }
 ];
 
