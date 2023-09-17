@@ -13,14 +13,17 @@
   justify-content: left;
   align-items: center;
   column-gap: 20px;
-  box-shadow: 0 1px 2px rgba(255, 255, 255, 0.445);
-  background-color: rgb(31, 31, 31);
+  border-bottom: 1px solid #4c4d4f;
+  background-image: radial-gradient(transparent 1px, #141414 1px);
+  background-size: 4px 4px;
+  backdrop-filter: saturate(150%) blur(5px);
 }
 
 .route-switch {
   position: relative;
   background: scroll no-repeat
     linear-gradient(to bottom, rgba(2, 2, 2, 0.89), rgba(0, 4, 66, 0.397));
+  backdrop-filter: blur(18px) saturate(50%);
 }
 
 .fixed-route {
