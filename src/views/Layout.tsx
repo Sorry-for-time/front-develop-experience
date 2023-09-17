@@ -1,3 +1,4 @@
+import { routes, type RouteDesc } from "@/assets/routes/routeList";
 import {
   KeepAlive,
   Transition,
@@ -15,57 +16,13 @@ import { ClassComponentSample } from "./classComponentSample/ClassComponentSampl
 const Layout = defineComponent({
   setup() {
     /**
-     * 路由描述
-     */
-    type RouteDesc = {
-      name: string;
-      desc: string;
-    };
-    /**
      * 当前活动路由名称
      */
     const activeRouteName = computed(() => router.currentRoute.value.name);
     /**
-     * 路由表
+     * 示例路由展示描述列表
      */
-    const routeList: Ref<Array<RouteDesc>> = ref([
-      {
-        name: "index",
-        desc: "home"
-      },
-      {
-        name: "css-text",
-        desc: "css-text"
-      },
-      {
-        name: "component-sample",
-        desc: "component-sample"
-      },
-      {
-        name: "computed-sample",
-        desc: "computed-sample"
-      },
-      {
-        name: "custom-directive",
-        desc: "custom-directive"
-      },
-      {
-        name: "hook-sample",
-        desc: "hook-sample"
-      },
-      {
-        name: "not-exist",
-        desc: "404 not -found"
-      },
-      {
-        name: "class-decorator-sample",
-        desc: "class-decorator-sample"
-      },
-      {
-        name: "binary-persist-test",
-        desc: "binary-persist-test"
-      }
-    ]);
+    const exampleLinkList: Ref<Array<RouteDesc>> = ref(routes);
     /**
      * 链接随机颜色列表
      */
@@ -100,7 +57,7 @@ const Layout = defineComponent({
     return {
       activeRouteName,
       router,
-      routeList,
+      routeList: exampleLinkList,
       colorList,
       switchRoute
     };
