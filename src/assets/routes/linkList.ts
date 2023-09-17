@@ -6,7 +6,10 @@ export type RouteDesc = {
   desc: string;
 };
 
-export const routes = [
+/**
+ * 页面路由调跳转链接信息
+ */
+export const pageLinks = [
   {
     name: "index",
     desc: "home"
