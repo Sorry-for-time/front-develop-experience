@@ -10,6 +10,7 @@ import {
 import type { Router } from "vue-router";
 import { RouterView, useRouter } from "vue-router";
 import style from "./Layout.module.scss";
+import { ClassComponentSample } from "./classComponentSample/ClassComponentSample";
 
 const Layout = defineComponent({
   setup() {
@@ -57,12 +58,12 @@ const Layout = defineComponent({
         desc: "404 not -found"
       },
       {
-        name: "class-component-sample",
-        desc: "class-component-sample"
-      },
-      {
         name: "class-decorator-sample",
         desc: "class-decorator-sample"
+      },
+      {
+        name: "binary-persist-test",
+        desc: "binary-persist-test"
       }
     ]);
     /**
@@ -114,49 +115,52 @@ const Layout = defineComponent({
     } = this;
 
     return (
-      <div class={style["wrapper"]}>
-        <nav class={style["nav-header"]}>
-          {routeList.map(({ name, desc }, index) => (
-            <a
-              key={name}
-              class={[
-                style["link"],
-                routeName === name ||
-                (!router.hasRoute(name) && routeName === "not-found")
-                  ? style["when-active"]
-                  : ""
-              ]}
-              onClick={(): void => switchRoute(name)}
-              style={[
-                {
-                  color:
-                    name === routeName ||
-                    (!router.hasRoute(name) && routeName === "not-found")
-                      ? "cadetblue"
-                      : colorList[index % colorList.length],
-                  fontWeight: name === routeName ? "bold" : "normal"
-                }
-              ]}
-            >
-              {desc}
-            </a>
-          ))}
-        </nav>
+      <>
+        <ClassComponentSample />
+        <div class={style["wrapper"]}>
+          <nav class={style["nav-header"]}>
+            {routeList.map(({ name, desc }, index) => (
+              <a
+                key={name}
+                class={[
+                  style["link"],
+                  routeName === name ||
+                  (!router.hasRoute(name) && routeName === "not-found")
+                    ? style["when-active"]
+                    : ""
+                ]}
+                onClick={(): void => switchRoute(name)}
+                style={[
+                  {
+                    color:
+                      name === routeName ||
+                      (!router.hasRoute(name) && routeName === "not-found")
+                        ? "cadetblue"
+                        : colorList[index % colorList.length],
+                    fontWeight: name === routeName ? "bold" : "normal"
+                  }
+                ]}
+              >
+                {desc}
+              </a>
+            ))}
+          </nav>
 
-        <main class={style["route-switch"]}>
-          <RouterView class={style["fixed-route"]}>
-            {{
-              default: ({ Component }: { Component: VNode }): JSX.Element => (
-                <Transition name="list">
-                  <KeepAlive max={64} exclude={["ClassComponentSample"]}>
-                    {Component}
-                  </KeepAlive>
-                </Transition>
-              )
-            }}
-          </RouterView>
-        </main>
-      </div>
+          <main class={style["route-switch"]}>
+            <RouterView class={style["fixed-route"]}>
+              {{
+                default: ({ Component }: { Component: VNode }): JSX.Element => (
+                  <Transition name="list">
+                    <KeepAlive max={64} exclude={["ClassComponentSample"]}>
+                      {Component}
+                    </KeepAlive>
+                  </Transition>
+                )
+              }}
+            </RouterView>
+          </main>
+        </div>
+      </>
     );
   }
 });
