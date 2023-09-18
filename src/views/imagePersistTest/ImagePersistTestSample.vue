@@ -11,34 +11,80 @@
 
 <script setup lang="ts">
 import { useCanvasImageStore } from "@/stores/useCanvasImageStore";
-import { onMounted, ref } from "vue";
+import { onBeforeUnmount, onMounted, ref } from "vue";
+import { BgHeaderEnum, type BgPacket, type Datatype } from "./backgroundWorker";
+import BackGroundWorker from "./backgroundWorker?worker";
 
 const canvasImageStore = useCanvasImageStore();
 const canvas = ref<HTMLCanvasElement | null>(null);
 
 onMounted(() => {
   if (canvas.value) {
-    const offscreenCanvas = canvas.value.transferControlToOffscreen();
-    const offsetCtx = offscreenCanvas.getContext("2d")!;
+    const worker = new BackGroundWorker();
 
-    if (canvasImageStore.imageData) {
+    const updater: VoidFunction = (): void => {
       const { width, height, imageData } = canvasImageStore;
-      const newImageData = new ImageData(imageData!, width, height);
-      offscreenCanvas.width = width;
-      offscreenCanvas.height = height;
-      offsetCtx.clearRect(0, 0, width, height);
-      offsetCtx.putImageData(newImageData, 0, 0);
-    }
-
-    canvasImageStore.$subscribe((_, { width, height, imageData }) => {
-      queueMicrotask(() => {
-        const newImageData = new ImageData(imageData!, width, height);
-        offscreenCanvas.width = width;
-        offscreenCanvas.height = height;
-        offsetCtx.clearRect(0, 0, width, height);
-        offsetCtx.putImageData(newImageData, 0, 0);
+      const buffer: ArrayBufferLike = imageData!.buffer;
+      const packet: BgPacket<Datatype> = {
+        header: BgHeaderEnum.FLUSH,
+        payload: {
+          buffer,
+          width,
+          height
+        }
+      };
+      worker.postMessage(packet, {
+        transfer: [buffer]
       });
+    };
+
+    // clean up
+    onBeforeUnmount(() => {
+      worker.terminate();
     });
+    // 子线程离线渲染初始化配置
+    const initConfig: BgPacket<OffscreenCanvas> = {
+      header: BgHeaderEnum.INIT,
+      payload: canvas.value.transferControlToOffscreen()
+    };
+    // 初始化
+    Promise.resolve(initConfig)
+      .then((res) => {
+        worker.postMessage(res, {
+          transfer: [res.payload!]
+        });
+
+        return new Promise((resolve, reject) => {
+          const initReport = ({ data }: MessageEvent<BgPacket>) => {
+            if (data.header === BgHeaderEnum.INIT_SUCCESS) {
+              resolve(void 0);
+            } else if (data.header === BgHeaderEnum.INIT_FAIL) {
+              reject(data.payload);
+            } else {
+              // un-know error
+              reject(data);
+            }
+            // remove listener
+            worker.removeEventListener("message", initReport);
+          };
+          // set up listener to wait message
+          worker.addEventListener("message", initReport);
+        });
+      })
+      .then(() => {
+        // load persist data if exists
+        if (canvasImageStore.imageData instanceof Uint8ClampedArray) {
+          updater();
+        }
+      })
+      .then(() => {
+        // watch data update && send flush signal to webWorker to re-render
+        canvasImageStore.$subscribe((): void => queueMicrotask(updater));
+      })
+      .catch(console.error)
+      .finally(() => {
+        console.log("image-persist-test-sample component scheduling done...");
+      });
   }
 });
 </script>
