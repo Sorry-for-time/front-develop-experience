@@ -123,8 +123,8 @@ export class CanvasBackgroundBase extends TSX<CanvasBackgroundBaseProps>()(
 
         this.imageListen = ({ data }: MessageEvent<CanvasWorkerPacket>) => {
           if (data.header === CanvasBackGroundSignalPrefix.GET_IMAGE_SUCCESS) {
-            const { width, height, buffer } = data.payload as CanvasImageMSG;
-            imageStore.updateImage(buffer, width, height);
+            const { width, height, imageData } = data.payload as CanvasImageMSG;
+            imageStore.updateImage(imageData, width, height);
           } else if (
             data.header === CanvasBackGroundSignalPrefix.GET_IMAGE_FAIL
           ) {

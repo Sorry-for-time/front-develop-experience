@@ -17,7 +17,7 @@ export type OperationFail = {
 };
 
 export type CanvasImageMSG = {
-  buffer: Uint8ClampedArray;
+  imageData: Uint8ClampedArray;
   width: number;
   height: number;
 };
@@ -89,12 +89,14 @@ export class CanvasBackgroundListener {
       const getImageDataSuccessPacket: CanvasWorkerPacket<CanvasImageMSG> = {
         header: CanvasBackGroundSignalPrefix.GET_IMAGE_SUCCESS,
         payload: {
-          buffer: data,
+          imageData: data,
           width,
           height
         }
       };
-      self.postMessage(getImageDataSuccessPacket);
+      self.postMessage(getImageDataSuccessPacket, {
+        transfer: [data.buffer]
+      });
     } catch (reason) {
       console.error(reason);
       const getImageDataFailPacket: CanvasWorkerPacket<OperationFail> = {
