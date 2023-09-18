@@ -47,11 +47,11 @@ const ClassSampleDecoratorRender = (
     >
       <Wrapper>
         <button class={["st-btn"]} onClick={that.increment}>
-          @throttle(600) increment
+          @UseThrottle(600)ms increment
         </button>
         <ColorSpan>{that.count}</ColorSpan>
         <button class={["st-btn"]} onClick={that.decrement}>
-          @debounce(1000ms) decrement
+          @UseDebounce(1000)ms decrement
         </button>
         <br />
         <div
