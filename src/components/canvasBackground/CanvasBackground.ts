@@ -116,9 +116,10 @@ export class CanvasBackgroundBase extends TSX<CanvasBackgroundBaseProps>()(
         const requestImagDataPacket: CanvasWorkerPacket = {
           header: CanvasBackGroundSignalPrefix.GET_IMAGE_MSG
         };
-        this.timer = setInterval(() => {
-          worker.postMessage(requestImagDataPacket);
-        }, this.flushWait);
+        this.timer = setInterval(
+          () => queueMicrotask(() => worker.postMessage(requestImagDataPacket)),
+          this.flushWait
+        );
 
         this.imageListen = ({ data }: MessageEvent<CanvasWorkerPacket>) => {
           if (data.header === CanvasBackGroundSignalPrefix.GET_IMAGE_SUCCESS) {
