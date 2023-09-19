@@ -147,6 +147,6 @@ const vDraggable: DraggableDirectiveType = {
 export { vDraggable };
 export type {
   DraggableDirectiveParam,
-  ExtentDirectiveType,
-  DraggableDirectiveType
+  DraggableDirectiveType,
+  ExtentDirectiveType
 };
