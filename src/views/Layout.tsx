@@ -108,7 +108,7 @@ const Layout = defineComponent({
               {{
                 default: ({ Component }: { Component: VNode }): JSX.Element => (
                   <Transition name="list">
-                    <KeepAlive max={64} exclude={["ClassComponentSample"]}>
+                    <KeepAlive max={64} exclude={["ClassDecoratorSample"]}>
                       {Component}
                     </KeepAlive>
                   </Transition>
