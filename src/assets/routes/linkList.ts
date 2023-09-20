@@ -45,5 +45,9 @@ export const pageLinks = [
   {
     name: "binary-persist-test",
     desc: "binary-persist-test"
+  },
+  {
+    name: "rx-streaming",
+    desc: "rx-streaming-sample"
   }
 ];

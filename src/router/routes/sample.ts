@@ -40,6 +40,11 @@ const sampleRouteConfig: RouteRecordRaw[] = [
     name: "binary-persist-test",
     component: () =>
       import("@/views/imagePersistTest/ImagePersistTestSample.vue")
+  },
+  {
+    path: "/rx-streaming",
+    name: "rx-streaming",
+    component: () => import("@/views/searchHighlightList/SearchHighlightList")
   }
 ];
 
