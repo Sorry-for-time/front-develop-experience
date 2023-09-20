@@ -1,0 +1,40 @@
+.highlightL-list-wrapper {
+  width: 100%;
+  height: 100%;
+}
+
+.main-wrapper {
+  width: 60%;
+  margin: 20px auto;
+  height: fit-content;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 40px auto;
+  row-gap: 5px;
+  justify-content: space-between;
+
+  header {
+    width: 100%;
+  }
+}
+
+.list-wrapper {
+  width: 100%;
+
+  h3 {
+    display: inline-block;
+    font-weight: bolder;
+  }
+
+  li {
+    list-style: none;
+    margin: 6px 0;
+  }
+}
+
+.highlight {
+  color: yellow;
+  font-weight: bold;
+  text-decoration: underline;
+  cursor: default;
+}
