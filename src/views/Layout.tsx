@@ -1,4 +1,5 @@
 import { pageLinks, type RouteDesc } from "@/assets/routes/linkList";
+import { isMobile } from "@/util/checkUtil";
 import {
   computed,
   defineComponent,
@@ -73,7 +74,7 @@ const Layout = defineComponent({
 
     return (
       <>
-        <ClassComponentSample />
+        {isMobile() ? null : <ClassComponentSample />}
         <div class={style["wrapper"]}>
           <nav class={style["nav-header"]}>
             {routeList.map(({ name, desc }, index) => (
