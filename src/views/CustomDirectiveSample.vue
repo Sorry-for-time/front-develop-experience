@@ -1,28 +1,51 @@
 <template>
   <div class="draggable-wrapper">
     <section
-      class="draggable-container"
-      v-draggable.setPriority.usePosition.activeClass="{
+      class="moveable-container"
+      v-moveable.setPriority.usePosition="{
         activeClass: ['active', 'active-hint']
       }"
     >
-      <TransitionGroup name="bounce">
-        <span
-          class="draggable-item"
-          data-draggable
-          v-for="item of list"
-          :key="item"
-          :data-x="createNextInt(400)"
-          :data-y="createNextInt(400)"
-        >
-          the {{ item }}
-        </span>
-      </TransitionGroup>
+      <span
+        class="draggable-item"
+        data-draggable
+        v-for="item of list"
+        :key="item.id"
+        :data-x="item.dataX"
+        :data-y="item.dataY"
+      >
+        the {{ item.text }}
+      </span>
     </section>
 
-    <main class="op-wrapper">
-      <button @click="addRandom" class="st-btn">添加一个随机标签</button>
-      <button class="st-btn">随机删除一个标签</button>
+    <main class="desc-wrapper">
+      <h1 class="color-text" style="font-weight: bolder">
+        v-draggable custom directive example
+      </h1>
+      <h2>
+        add the v-draggable custom directive in container element that declare a
+        draggable element collection view
+      </h2>
+      <h2>
+        and then add the data-draggable hinted attribute in child element if you
+        want it can drag
+      </h2>
+      <div>
+        <button
+          style="width: fit-content"
+          @click="list.push(createItem())"
+          class="st-btn"
+        >
+          add a new item
+        </button>
+        <button
+          style="width: fit-content; margin-left: 20px"
+          @click="list.shift()"
+          class="st-btn"
+        >
+          delete an item
+        </button>
+      </div>
     </main>
   </div>
 </template>
@@ -35,19 +58,31 @@ const createNextInt = (limit: number): number => {
   return Math.floor(Math.random() * limit + 1);
 };
 
-const list: Ref<Array<string>> = ref(
+type TagType = {
+  id: string;
+  text: string;
+  dataX: number;
+  dataY: number;
+};
+
+const createItem = (): TagType => {
+  return {
+    id: nanoid(),
+    text: nanoid(4),
+    dataX: createNextInt(400),
+    dataY: createNextInt(400)
+  };
+};
+
+const list: Ref<Array<TagType>> = ref(
   Array.from(
     (function* () {
       for (let i: number = 0; i < 10; i++) {
-        yield `tag: ${i + 1}`;
+        yield createItem();
       }
     })()
   )
 );
-
-const addRandom: VoidFunction = async () => {
-  list.value.push(`the tag: ${nanoid(4)}`);
-};
 </script>
 
 <style lang="scss" scoped>
@@ -58,10 +93,9 @@ const addRandom: VoidFunction = async () => {
   height: 100%;
   display: grid;
   grid-template-columns: 500px auto;
-  /* justify-content: space-between; */
 }
 
-.draggable-container {
+.moveable-container {
   margin: 10px 10px;
   width: 480px;
   height: 480px;
@@ -91,23 +125,27 @@ const addRandom: VoidFunction = async () => {
   border: 1px dashed rgb(211, 211, 211);
   opacity: 0.6;
   box-shadow: 0 0 4px gold;
-  cursor: grab;
-  will-change: transform;
+  will-change: transform, cursor;
+  cursor: default;
 }
 .active {
-  cursor: grabbing;
+  cursor: move;
 }
 .active-hint {
   opacity: unset;
   border: 1px solid rgb(211, 211, 211);
 }
 
-.op-wrapper {
+.desc-wrapper {
   margin-top: 10px;
   display: flex;
   height: fit-content;
   column-gap: 10px;
   align-items: center;
   flex-wrap: wrap;
+
+  * {
+    width: 90%;
+  }
 }
 </style>
