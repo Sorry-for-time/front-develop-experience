@@ -1,4 +1,5 @@
 import { LineScrollEffect } from "@/effect/LineScrollEffect";
+import { isMobile } from "@/util/checkUtil";
 import { CanvasBackGroundSignalPrefix } from "./constant";
 
 export type CanvasWorkerPacket<T = any> = {
@@ -36,12 +37,10 @@ export class CanvasBackgroundListener {
   #init(canvas: OffscreenCanvas) {
     try {
       this.#canvas = canvas;
-      const isPc: boolean = self.navigator.platform.includes("x86");
-
       this.#ctx = this.#canvas.getContext("2d", {
         alpha: true,
         // 判断平台是否为移动端
-        willReadFrequently: isPc,
+        willReadFrequently: !isMobile(),
         desynchronized: true
       })!;
 
