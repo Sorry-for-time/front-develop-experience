@@ -115,7 +115,6 @@ const list: Ref<Array<TagType>> = ref(
   text-align: center;
   user-select: none;
   border-radius: 5px;
-  backdrop-filter: blur(12px);
   background: fixed no-repeat center
     linear-gradient(240deg, #8820ff, rgb(28, 250, 239), #2e2afa);
   background-size: cover;
