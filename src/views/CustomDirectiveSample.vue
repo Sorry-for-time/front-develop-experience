@@ -20,15 +20,15 @@
 
     <main class="desc-wrapper">
       <h1 class="color-text" style="font-weight: bolder">
-        v-draggable custom directive example
+        v-moveable custom directive command use example
       </h1>
       <h2>
-        add the v-draggable custom directive in container element that declare a
+        add the v-moveable custom command in container element that declare a
         draggable element collection view
       </h2>
       <h2>
-        and then add the data-draggable hinted attribute in child element if you
-        want it can drag
+        and then add the data-draggable custom attribute in child element if you
+        want it can be dragging
       </h2>
       <div>
         <button
