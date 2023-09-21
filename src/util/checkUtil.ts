@@ -4,11 +4,10 @@
  * @returns 当前设备是否为移动端
  */
 export const isMobile = (): boolean => {
-  const regPattern: RegExp =
+  const regUA: RegExp =
     /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
   return (
-    regPattern.test(navigator.userAgent) ||
-    ((navigator as any).userAgentData.mobile as boolean) ||
-    regPattern.test((navigator as any).userAgentData.platform)
+    regUA.test(navigator.userAgent) ||
+    (/arm/i.test(navigator.platform) && /Linux/i.test(navigator.userAgent))
   );
 };
