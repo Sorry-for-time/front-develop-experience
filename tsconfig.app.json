@@ -6,7 +6,7 @@
     "src/**/*.vue",
     "src/**/*.tsx",
     "src/**/*.jsx",
-    "src/**/*.json",
+    "src/**/*.json"
   ],
   "exclude": ["src/**/__tests__/*"],
   "compilerOptions": {
@@ -19,6 +19,7 @@
       "@/*": ["./src/*"]
     },
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": true
+    "emitDecoratorMetadata": true,
+    "noUnusedLocals": true
   }
 }
