@@ -90,23 +90,29 @@ class SearchHighlightListBase
       .pipe(
         tap((kv) => kv.preventDefault()),
         filter(() => this.displayList.length > 0),
-        switchMap((e) => of(e)),
-        tap(() => this.inputDom.blur())
+        switchMap((e) => of(e))
       )
       .subscribe((keyupEv) => {
+        if (this.searchLoading) {
+          return;
+        }
+
         switch (keyupEv.key) {
           case "ArrowUp":
             if (this._selectedIndex > 0) {
               --this._selectedIndex;
+              this.inputDom.blur();
             }
             break;
           case "ArrowDown":
             if (this._selectedIndex < this.displayList.length - 1) {
               ++this._selectedIndex;
+              this.inputDom.blur();
             }
             break;
           case "Escape":
             this._selectedIndex = -1;
+            this.inputDom.focus();
             break;
           case "Enter":
             if (
