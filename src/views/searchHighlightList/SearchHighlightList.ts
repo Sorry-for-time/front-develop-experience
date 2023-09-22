@@ -135,16 +135,14 @@ class SearchHighlightListBase
         tap(() => (this.searchLoading = true)),
         map((event) => (event.target as HTMLInputElement).value.trim()),
         debounceTime(this.flushWait),
-        distinctUntilChanged(),
         tap(() => {
-          this._selectedIndex = 0;
+          this.searchLoading = false;
         }),
+        distinctUntilChanged(),
         switchMap((keyword) => of(keyword))
       )
       .subscribe((keyword) => {
-        // reset default active index;
         this._selectedIndex = -1;
-        this.searchLoading = false;
         this.displayList = this.contentListStore.contentList
           .filter(() => keyword.length > 0)
           .map((item) => {
