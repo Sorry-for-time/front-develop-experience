@@ -5,7 +5,7 @@ import type {
 } from "./SearchHighlightList";
 import style from "./SearchHighlightList.module.scss";
 
-const elementBuilder = (resource: WordSplitType): JSX.Element => {
+const elementBuilder = (resource: WordSplitType, itemIdx: number, selectedIdx: number): JSX.Element => {
   const { data, record, keyword } = resource;
   // build title-element
   let title: JSX.Element;
@@ -72,7 +72,7 @@ const elementBuilder = (resource: WordSplitType): JSX.Element => {
   }
 
   return (
-    <li key={resource.data.id}>
+    <li key={resource.data.id} class={[itemIdx === selectedIdx?style["item-select"]:null]}>
       {title}
       {text}
     </li>
@@ -105,7 +105,7 @@ const ListTemplateRender = (that: SearchHighlightListBase): JSX.Element => (
         </h2>
 
         <TransitionGroup name="list" tag="ul">
-          {that.displayList.map(elementBuilder)}
+          {that.displayList.map((value, index)=> elementBuilder(value, index, that.selectedIndex))}
         </TransitionGroup>
       </div>
     </main>

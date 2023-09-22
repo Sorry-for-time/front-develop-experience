@@ -4,6 +4,7 @@ import {
   Subscription,
   debounceTime,
   distinctUntilChanged,
+  filter,
   fromEvent,
   map,
   of,
@@ -16,6 +17,7 @@ import {
   Ref,
   Setup,
   TSX,
+  Vanilla,
   Vue,
   toNative
 } from "vue-facing-decorator";
@@ -62,18 +64,80 @@ class SearchHighlightListBase
   @Ref("input")
   private readonly inputDom!: HTMLDivElement;
 
-  private subscription!: Subscription;
+  /**
+   * 搜索行为订阅
+   */
+  private highlightSearchSub!: Subscription;
+
+  private itemSelectedListenSub!: Subscription;
+
+  private _selectedIndex: number = -1;
+
+  @Vanilla
+  public get selectedIndex(): number {
+    return this._selectedIndex;
+  }
 
   mounted() {
-    this.subscription = fromEvent<InputEvent>(this.inputDom, "input")
+    /*
+      when display list has content, and user use arrowUp, arrowDown or Enter keyboard,
+      set the item highlight and open the link in new page
+    */
+    this.itemSelectedListenSub = fromEvent<KeyboardEvent>(
+      document.body,
+      "keyup"
+    )
+      .pipe(
+        tap((kv) => kv.preventDefault()),
+        filter(() => this.displayList.length > 0),
+        switchMap((e) => of(e)),
+        tap(() => this.inputDom.blur())
+      )
+      .subscribe((keyupEv) => {
+        switch (keyupEv.key) {
+          case "ArrowUp":
+            if (this._selectedIndex > 0) {
+              --this._selectedIndex;
+            }
+            break;
+          case "ArrowDown":
+            if (this._selectedIndex < this.displayList.length - 1) {
+              ++this._selectedIndex;
+            }
+            break;
+          case "Escape":
+            this._selectedIndex = -1;
+            break;
+          case "Enter":
+            if (
+              this._selectedIndex >= 0 &&
+              this.selectedIndex <= this.displayList.length - 1
+            ) {
+              window.open(
+                this.displayList[this._selectedIndex].data.link,
+                "_blank"
+              );
+            }
+            break;
+          default:
+            break;
+        }
+      });
+
+    this.highlightSearchSub = fromEvent<InputEvent>(this.inputDom, "input")
       .pipe(
         tap(() => (this.searchLoading = true)),
         map((event) => (event.target as HTMLInputElement).value.trim()),
         debounceTime(this.flushWait),
         distinctUntilChanged(),
+        tap(() => {
+          this._selectedIndex = 0;
+        }),
         switchMap((keyword) => of(keyword))
       )
       .subscribe((keyword) => {
+        // reset default active index;
+        this._selectedIndex = -1;
         this.searchLoading = false;
         this.displayList = this.contentListStore.contentList
           .filter(() => keyword.length > 0)
@@ -102,8 +166,12 @@ class SearchHighlightListBase
   }
 
   unmounted(): void {
-    if (this.subscription) {
-      this.subscription.unsubscribe();
+    // clean up
+    if (this.highlightSearchSub) {
+      this.highlightSearchSub.unsubscribe();
+    }
+    if (this.itemSelectedListenSub) {
+      this.itemSelectedListenSub.unsubscribe();
     }
   }
 }

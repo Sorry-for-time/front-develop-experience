@@ -29,6 +29,23 @@
   li {
     list-style: none;
     margin: 6px 0;
+    position: relative;
+  }
+
+  .item-select {
+    position: relative;
+
+    &::after {
+      content: "";
+      position: absolute;
+      left: -3px;
+      top: 0;
+      right: -3px;
+      bottom: 0;
+      border-radius: 5px;
+      border: 1px solid rgba(245, 222, 179, 0.616);
+      box-shadow: 0 0 3px white;
+    }
   }
 }
 
