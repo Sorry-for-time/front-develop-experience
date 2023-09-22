@@ -30,17 +30,45 @@ router.onError((reason, to, from) => {
   console.warn(reason, `to: ${to.fullPath}, from: ${from.fullPath}`);
 });
 
+const faviconLink: HTMLLinkElement = document.head.querySelector("[rel=icon]")!;
 router.afterEach((to, from, failure) => {
-  if (to.name === "not-found") {
-    loadingBarHooks.error();
-  } else if (failure) {
-    if (failure.message.startsWith("Avoided redundant navigation")) {
-      loadingBarHooks.finish();
-    } else {
+  switch (true) {
+    case to.name === "not-found":
       loadingBarHooks.error();
-    }
-  } else {
-    loadingBarHooks.finish();
+      document.title = "NOT-FOUND";
+      break;
+    case !!failure:
+      if (failure!.message.startsWith("Avoided redundant navigation")) {
+        document.title = to.name as string;
+        loadingBarHooks.finish();
+      } else {
+        document.title = "UN-KNOW ERROR";
+        loadingBarHooks.error();
+      }
+      break;
+    default:
+      document.title = to.name as string;
+      loadingBarHooks.finish();
+      break;
+  }
+
+  const routeName = to.name as string;
+  switch (true) {
+    case routeName.startsWith("rx"):
+      faviconLink.href = "/site_icon/rxjs.ico";
+      break;
+    case routeName.startsWith("class") || routeName.startsWith("decorator"):
+      faviconLink.href = "/site_icon/decorator.png";
+      break;
+    case routeName.startsWith("web-rtc") || routeName.startsWith("rtc"):
+      faviconLink.href = "/site_icon/web-rtc.png";
+      break;
+    case routeName.startsWith("binary") || routeName.startsWith("indexeddb"):
+      faviconLink.href = "/site_icon/indexeddb.png";
+      break;
+    default:
+      faviconLink.href = "/site_icon/favicon.svg";
+      break;
   }
 });
 
