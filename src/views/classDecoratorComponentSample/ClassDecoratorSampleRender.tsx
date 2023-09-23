@@ -9,11 +9,11 @@ const ClassSampleDecoratorRender = (
     <div style={{ width: "100%" }}>
       <div class={style["wrapper"]}>
         <button class={["st-btn"]} onClick={that.increment}>
-          @UseThrottle(600)ms increment
+          <span class={style["mark"]}>@UseThrottle(600)</span> ms increment
         </button>
         <span class={style["color-span"]}>{that.count}</span>
         <button class={["st-btn"]} onClick={that.decrement}>
-          @UseDebounce(1000)ms decrement
+          <span class={style["mark"]}>@UseDebounce(1000)</span> ms decrement
         </button>
         <br />
         <div
