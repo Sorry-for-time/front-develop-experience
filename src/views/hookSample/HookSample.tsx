@@ -1,8 +1,8 @@
-import { defineComponent, onMounted, ref, type Ref, type VNodeRef } from "vue";
-import style from "./HookSample.module.scss";
-import { loadingBarHooks } from "@/main";
 import { LoadingBar } from "@/components/loadingBar/LoadingBar";
 import { useLoadingBar, type LoadingBarHook } from "@/hooks/useLoadingBar";
+import { loadingBarHooks } from "@/main";
+import { defineComponent, onMounted, ref, type Ref } from "vue";
+import style from "./HookSample.module.scss";
 
 const HookSample = defineComponent({
   name: "HookSample",
@@ -14,8 +14,8 @@ const HookSample = defineComponent({
     });
 
     return {
-      card: card,
-      hook: hook
+      card,
+      hook
     };
   },
   render(): JSX.Element {
