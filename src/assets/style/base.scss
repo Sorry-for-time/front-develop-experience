@@ -96,24 +96,39 @@ body {
 }
 
 .st-btn {
-  --light: rgba(230, 230, 230, 0.877);
-  --dark: rgb(34, 33, 33);
-
-  border-radius: 5px;
-  box-shadow: 0 0 2px var(--dark);
-  color: var(--dark);
-  outline: none;
+  background-color: #257ce7;
+  color: #fff;
+  padding: 6px 8px;
   border: none;
-  padding: 6px;
+  outline: none;
+  border-radius: 4px;
+  box-shadow: 0 1px 2px #4d4d4d;
+  position: relative;
   font-weight: normal;
 
-  font-size: 14px;
-  background: rgb(0, 140, 196);
-  backdrop-filter: blur(10x);
+  &:hover {
+    transition: ease-in 600ms;
+    background: #3485e7;
+  }
 
-  @media (prefers-color-scheme: dark) {
-    box-shadow: 0 1px 2px var(--light);
-    color: var(--light);
+  &:active {
+    transition: all ease-out 200ms;
+    box-shadow: 0 0 3px 1px rgba(255, 255, 255, 0.521), 0 0 4px 2px #4096ff;
+
+    &::after {
+      content: "";
+      z-index: -1;
+      position: absolute;
+      left: 0;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      border-radius: 4px;
+      border: 1px solid #4096ff;
+      background: #67abff81;
+      transform: scale(1.01);
+      filter: blur(2px);
+    }
   }
 }
 
