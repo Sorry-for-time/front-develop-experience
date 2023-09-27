@@ -83,7 +83,7 @@ const CapitalHintInput = defineComponent({
     return (
       <div class={style["input-wrapper"]}>
         <input
-          class={style["input-ref"]}
+          class={["st-input"]}
           type={type}
           value={modelValue}
           onInput={(payload: Event) => {
