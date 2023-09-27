@@ -66,7 +66,7 @@ export const GrammarSample = defineComponent({
             style={{
               margin: "5px"
             }}
-            class={[style["st-input"]]}
+            class={["st-input"]}
             type="text"
             v-model={this.text}
           />
@@ -145,7 +145,7 @@ export const GrammarSample = defineComponent({
             style={{ margin: "5px 0" }}
             type="number"
             v-model={this.score}
-            class={style["st-input"]}
+            class={["st-input"]}
           />
           <h1>
             {((): string => {
