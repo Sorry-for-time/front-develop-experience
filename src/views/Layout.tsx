@@ -15,6 +15,7 @@ import { ClassComponentSample } from "./classComponentSample/ClassComponentSampl
 import style from "./Layout.module.scss";
 
 const Layout = defineComponent({
+  name: "Layout",
   setup() {
     /**
      * 当前活动路由名称
@@ -54,13 +55,18 @@ const Layout = defineComponent({
         });
       }
     };
+    /**
+     * 是否展示菜单列表
+     */
+    const showBurgerList = ref(false);
 
     return {
       activeRouteName,
       router,
       routeList: exampleLinkList,
       colorList,
-      switchRoute
+      switchRoute,
+      showBurgerList
     };
   },
   render(): JSX.Element {
@@ -74,34 +80,98 @@ const Layout = defineComponent({
 
     return (
       <>
+        {/* 全局动态背景 */}
         {isMobile() ? null : <ClassComponentSample />}
         <div class={style["wrapper"]}>
+          {/* 导航栏 */}
           <nav class={style["nav-header"]}>
-            {routeList.map(({ name, desc }, index) => (
-              <a
-                key={name}
-                class={[
-                  style["link"],
-                  routeName === name ||
-                  (!router.hasRoute(name) && routeName === "not-found")
-                    ? style["when-active"]
-                    : ""
-                ]}
-                onClick={(): void => switchRoute(name)}
-                style={[
-                  {
-                    color:
-                      name === routeName ||
-                      (!router.hasRoute(name) && routeName === "not-found")
-                        ? "cadetblue"
-                        : colorList[index % colorList.length],
-                    fontWeight: name === routeName ? "bold" : "normal"
-                  }
-                ]}
+            {/* 默认展示列表 */}
+            <div class={style["default-display"]}>
+              {routeList.slice(0, 5).map(({ name, desc }, index) => (
+                <a
+                  key={name}
+                  class={[
+                    style["link"],
+                    routeName === name ||
+                    (!router.hasRoute(name) && routeName === "not-found")
+                      ? style["when-active"]
+                      : ""
+                  ]}
+                  onClick={(): void => switchRoute(name)}
+                  style={[
+                    {
+                      color:
+                        name === routeName ||
+                        (!router.hasRoute(name) && routeName === "not-found")
+                          ? "cadetblue"
+                          : colorList[index % colorList.length],
+                      fontWeight: name === routeName ? "bold" : "normal"
+                    }
+                  ]}
+                >
+                  {desc}
+                </a>
+              ))}
+            </div>
+
+            {/* 额外菜单 */}
+            <div class={[style["menu-wrapper"]]} v-show={routeList.length > 4}>
+              {/* 面包屑 */}
+              <section
+                class={style["burger-wrapper"]}
+                onPointerdown={() =>
+                  (this.showBurgerList = !this.showBurgerList)
+                }
               >
-                {desc}
-              </a>
-            ))}
+                {Array.from([1, 2, 3]).map((i) => (
+                  <div
+                    key={i}
+                    class={[
+                      style["burger-line"],
+                      this.showBurgerList ? style["burger-open"] : ""
+                    ]}
+                  />
+                ))}
+              </section>
+
+              {/* 列表内容 */}
+              <Transition name="fading">
+                <div v-show={this.showBurgerList}>
+                  <div class={style["triangle"]} />
+                  <main class={style["other-list-wrapper"]}>
+                    {routeList.slice(5).map(({ name, desc }, index) => (
+                      <a
+                        key={name}
+                        class={[
+                          style["link"],
+                          routeName === name ||
+                          (!router.hasRoute(name) && routeName === "not-found")
+                            ? style["when-active"]
+                            : null
+                        ]}
+                        onClick={(): void => {
+                          switchRoute(name);
+                          this.showBurgerList = false;
+                        }}
+                        style={[
+                          {
+                            color:
+                              name === routeName ||
+                              (!router.hasRoute(name) &&
+                                routeName === "not-found")
+                                ? "cadetblue"
+                                : colorList[index % colorList.length],
+                            fontWeight: name === routeName ? "bold" : "normal"
+                          }
+                        ]}
+                      >
+                        {desc}
+                      </a>
+                    ))}
+                  </main>
+                </div>
+              </Transition>
+            </div>
           </nav>
 
           <main class={style["route-switch"]}>
