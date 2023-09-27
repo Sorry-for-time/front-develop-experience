@@ -1,10 +1,10 @@
-import { Layout } from "@/views/Layout";
 import { defineComponent } from "vue";
+import { RouterView } from "vue-router";
 
 const App = defineComponent({
   name: "App",
   render(): JSX.Element {
-    return <Layout />;
+    return <RouterView />;
   }
 });
 
