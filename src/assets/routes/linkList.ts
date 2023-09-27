@@ -49,5 +49,13 @@ export const pageLinks = [
   {
     name: "rx-streaming",
     desc: "rx-streaming-sample"
+  },
+  {
+    name: "form-example",
+    desc: "form-example"
+  },
+  {
+    name: "web-rtc",
+    desc: "web-rtc"
   }
 ];
