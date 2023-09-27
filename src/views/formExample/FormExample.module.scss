@@ -15,65 +15,6 @@
   .form-item {
     margin: 10px auto;
   }
-
-  label {
-    color: #cecece;
-    margin: 0 10px;
-    font-weight: normal;
-  }
-
-  input[type="text"],
-  input[type="number"] {
-    border-radius: 5px;
-    outline: none;
-    border: 1px solid #fff;
-    box-shadow: 0 0 3px #ccc;
-    padding: 4px 5px;
-    box-sizing: border-box;
-
-    &:focus-within {
-      border: 1px solid rgb(71, 133, 247);
-      transition: all ease-out 200ms;
-      caret-color: #ccc;
-      box-shadow: 0 0 3px rgb(45, 134, 223);
-    }
-  }
-
-  textarea {
-    border: 1px solid wheat;
-    outline: none;
-    border-radius: 5px;
-    caret-color: #ccc;
-    padding: 3px 5px;
-    resize: vertical;
-
-    &::placeholder {
-      color: #919191;
-    }
-
-    &:focus-within {
-      border: 1px solid rgb(71, 133, 247);
-      transition: all ease-out 200ms;
-      caret-color: #ccc;
-      box-shadow: 0 0 3px rgb(45, 134, 223);
-    }
-  }
-
-  select {
-    border-radius: 5px;
-    outline: none;
-    border: 1px solid #fff;
-    box-shadow: 0 0 3px #ccc;
-    padding: 4px 5px;
-    box-sizing: border-box;
-
-    &:focus-within {
-      border: 1px solid rgb(71, 133, 247);
-      transition: all ease-out 200ms;
-      caret-color: #ccc;
-      box-shadow: 0 0 3px rgb(45, 134, 223);
-    }
-  }
 }
 
 .detail-display {

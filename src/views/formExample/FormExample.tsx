@@ -62,12 +62,21 @@ const FormExample = defineComponent({
       <div class={style["form-example-wrapper"]}>
         <form class={style["form-data"]} onSubmit={(ev) => ev.preventDefault()}>
           <div class={style["form-item"]}>
-            <label for="name">姓名: </label>
-            <input type="text" name="name" id="name" v-model={formData.name} />
+            <label class={["st-label"]} for="name">
+              姓名:
+            </label>
+            <input
+              autocomplete="true"
+              class={["st-input"]}
+              type="text"
+              name="name"
+              id="name"
+              v-model={formData.name}
+            />
           </div>
 
           <div class={style["form-item"]}>
-            <label>性别: </label>
+            <span class={["st-label"]}>性别:</span>
             <label for="male">男</label>
             <input
               id="male"
@@ -76,7 +85,9 @@ const FormExample = defineComponent({
               v-model={formData.gender}
             />
 
-            <label for="female">女</label>
+            <label class={["st-label"]} for="female">
+              女
+            </label>
             <input
               id="female"
               type="radio"
@@ -86,7 +97,9 @@ const FormExample = defineComponent({
           </div>
 
           <div class={style["form-item"]}>
-            <label for="basket">篮球</label>
+            <label class={["st-label"]} for="basket">
+              篮球
+            </label>
             <input
               v-model={formData.hobbies}
               type="checkbox"
@@ -95,7 +108,9 @@ const FormExample = defineComponent({
               id="basket"
             />
 
-            <label for="singing">唱歌</label>
+            <label class={["st-label"]} for="singing">
+              唱歌
+            </label>
             <input
               v-model={formData.hobbies}
               type="checkbox"
@@ -104,7 +119,9 @@ const FormExample = defineComponent({
               id="singing"
             />
 
-            <label for="coding">coding</label>
+            <label class={["st-label"]} for="coding">
+              coding
+            </label>
             <input
               v-model={formData.hobbies}
               type="checkbox"
@@ -115,8 +132,13 @@ const FormExample = defineComponent({
           </div>
 
           <div class={style["form-item"]}>
-            <label for="job">职业: </label>
-            <select id="job" name="job" v-model={formData.job}>
+            <span class={["st-label"]}>职业:</span>
+            <select
+              class={["st-select"]}
+              id="job"
+              name="job"
+              v-model={formData.job}
+            >
               {["雇主", "律师", "教师", "软件开发人员"].map((item) => (
                 <option value={item} key={item}>
                   {item}
@@ -126,8 +148,10 @@ const FormExample = defineComponent({
           </div>
 
           <div class={style["form-item"]}>
-            <label for="description">个人简介: </label>
+            <span class={["st-label"]}>个人简介: </span>
             <textarea
+              name="description"
+              class={["st-textarea"]}
               cols={17}
               rows={6}
               placeholder="please input your self description"
@@ -136,13 +160,21 @@ const FormExample = defineComponent({
           </div>
 
           <div class={style["form-item"]}>
-            <label for="age">年纪: </label>
-            <input type="number" name="" id="" v-model={formData.age} />
+            <label class={["st-label"]} for="age">
+              年纪:
+            </label>
+            <input
+              class={["st-input"]}
+              type="number"
+              name="age"
+              id="age"
+              v-model={formData.age}
+            />
           </div>
 
           <div class={style["form-item"]}>
-            <label for="city">城市: </label>
-            <select name="city" id="city">
+            <span class={["st-label"]}>城市: </span>
+            <select class={["st-select"]} name="city" id="city">
               {["厦门", "龙岩", "福州", "漳州"].map((item) => (
                 <option key={item} value={item}>
                   {item}
@@ -152,7 +184,9 @@ const FormExample = defineComponent({
           </div>
 
           <div class={style["form-item"]}>
-            <label for="protocol">同意协议</label>
+            <label class={["st-label"]} for="protocol">
+              同意协议
+            </label>
             <input
               type="checkbox"
               name="protocol"
