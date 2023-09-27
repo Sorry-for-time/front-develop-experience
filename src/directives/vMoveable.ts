@@ -4,7 +4,6 @@ import {
   filter,
   fromEvent,
   mergeMap,
-  queueScheduler,
   takeUntil,
   tap
 } from "rxjs";
@@ -142,7 +141,7 @@ const vMoveable: MoveableDirectiveType = {
               fromEvent<PointerEvent>(document.body, "pointerup").pipe(
                 // 设置落脚点
                 tap(() =>
-                  queueScheduler.schedule(() => {
+                  animationFrameScheduler.schedule(() => {
                     // 移除按下鼠标时设置的激活样式
                     const receivedClass = binding.value.activeClass;
                     if (Array.isArray(receivedClass)) {
@@ -161,7 +160,7 @@ const vMoveable: MoveableDirectiveType = {
         )
       )
       .subscribe((ev) =>
-        queueScheduler.schedule(() => {
+        animationFrameScheduler.schedule(() => {
           // 更新移动位置
           const target: HTMLElement = selected!;
           let dataX: number = 0;
