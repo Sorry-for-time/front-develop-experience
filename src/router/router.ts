@@ -1,11 +1,10 @@
 import { loadingBarHooks } from "@/main";
-import { indexConfig } from "@/router/routes/index";
-import { sampleRouteConfig } from "@/router/routes/sample";
+import { indexConfig } from "@/router/routes/routeList";
 import { createRouter, createWebHistory } from "vue-router";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
-  routes: [...indexConfig, ...sampleRouteConfig],
+  routes: [...indexConfig],
   strict: true,
   scrollBehavior: (to, from, savedPosition) => {
     return savedPosition
@@ -18,7 +17,7 @@ const router = createRouter({
   }
 });
 
-router.beforeEach((to, from, next) => {
+router.beforeEach((_to, _from, next) => {
   loadingBarHooks.start();
   next();
 });
