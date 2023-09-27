@@ -28,3 +28,12 @@
   opacity: 0;
   transform: translateX(30px);
 }
+
+.fading-enter-active,
+.fading-leave-active {
+  transition: all 0.5s ease;
+}
+.fading-enter-from,
+.fading-leave-to {
+  opacity: 0;
+}
