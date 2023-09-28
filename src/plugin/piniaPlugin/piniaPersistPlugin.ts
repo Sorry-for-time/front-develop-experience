@@ -98,12 +98,21 @@ const createPiniaIndexedDBPersistPlugin = (workerNum: number = 1) => {
     storageType: "localStorage" | "sessionStorage"
   ): void => {
     const { store, options } = context;
-    const persistReadOnly = options.persist?.persistReadonly ? true : false;
-    const persistedDataStr =
+    const key: string = options.persist?.key ? options.persist.key : store.$id;
+    const persistReadOnly: boolean = options.persist?.persistReadonly
+      ? true
+      : false;
+    const persistedDataStr: string | null =
       storageType === "localStorage"
-        ? localStorage.getItem(store.$id)
-        : sessionStorage.getItem(store.$id);
+        ? localStorage.getItem(key)
+        : sessionStorage.getItem(key);
     // load from local data if exists...
+    const beforeRestore = options.persist?.beforeRestore;
+    const afterRestore = options.persist?.afterRestore;
+
+    if (typeof beforeRestore === "function") {
+      beforeRestore(context);
+    }
     if (persistedDataStr) {
       const deSerializedData = JSON.parse(persistedDataStr);
       store.$patch((state) => {
@@ -111,14 +120,17 @@ const createPiniaIndexedDBPersistPlugin = (workerNum: number = 1) => {
         recursiveReplaceValue(state, deSerializedData, persistReadOnly);
       });
     }
+    if (typeof afterRestore === "function") {
+      afterRestore(context);
+    }
     // add state change listener and record new state
     store.$subscribe((_mutation, state) => {
       const serializedDataStr = JSON.stringify(
         unwrapReactiveOrRefObj(state, persistReadOnly)
       );
       storageType === "localStorage"
-        ? localStorage.setItem(store.$id, serializedDataStr)
-        : sessionStorage.setItem(store.$id, serializedDataStr);
+        ? localStorage.setItem(key, serializedDataStr)
+        : sessionStorage.setItem(key, serializedDataStr);
     });
   };
 
@@ -140,13 +152,15 @@ const createPiniaIndexedDBPersistPlugin = (workerNum: number = 1) => {
         const { store } = context;
         switch (persist.storage) {
           case "indexedDB":
+            // 用于持久化的 key 名称
+            const persistKey: string = persist?.key ? persist.key : store.$id;
             const dataTransferWorker: Worker = workers[selectWorkerLocation];
             // 更新下一个 store 使用的 worker 下标
             selectWorkerLocation = (selectWorkerLocation + 1) % workers.length;
             // 初始化配置
             const initConfig: DataTransferPacket = {
               header: SignalPrefixEnum.INIT,
-              payload: store.$id
+              payload: persistKey
             };
             const start: number = performance.now();
             // 初始化 webWorker 线程
@@ -162,14 +176,14 @@ const createPiniaIndexedDBPersistPlugin = (workerNum: number = 1) => {
                     }: MessageEvent<DataTransferPacket>): void {
                       if (
                         data.header === SignalPrefixEnum.INIT_SUCCESS &&
-                        data.storeId === store.$id
+                        data.storeId === persistKey
                       ) {
                         resolve(data.header);
                         // clean up
                         dataTransferWorker.removeEventListener("message", init);
                       } else if (
                         data.header === SignalPrefixEnum.INIT_FAILURE &&
-                        data.storeId === store.$id
+                        data.storeId === persistKey
                       ) {
                         reject({
                           description: `web-worker's indexeddb init fail`,
@@ -187,7 +201,7 @@ const createPiniaIndexedDBPersistPlugin = (workerNum: number = 1) => {
                 const requestPersistPacket: DataTransferPacket = {
                   header: SignalPrefixEnum.QUERY,
                   payload: {
-                    storeId: store.$id,
+                    storeId: persistKey,
                     key: "state"
                   }
                 };
@@ -203,7 +217,7 @@ const createPiniaIndexedDBPersistPlugin = (workerNum: number = 1) => {
                     }: MessageEvent<DataTransferPacket>): void {
                       if (
                         data.header === SignalPrefixEnum.QUERY_SUCCESS &&
-                        data.storeId === store.$id
+                        data.storeId === persistKey
                       ) {
                         resolve(data.payload);
                         // clean up
@@ -213,7 +227,7 @@ const createPiniaIndexedDBPersistPlugin = (workerNum: number = 1) => {
                         );
                       } else if (
                         data.header === SignalPrefixEnum.QUERY_FAIL &&
-                        data.storeId === store.$id
+                        data.storeId === persistKey
                       ) {
                         reject({
                           description: "can not query default data",
@@ -230,6 +244,10 @@ const createPiniaIndexedDBPersistPlugin = (workerNum: number = 1) => {
                 });
               })
               .then((res: any) => {
+                const beforeRestore = persist.beforeRestore;
+                if (typeof beforeRestore === "function") {
+                  beforeRestore(context);
+                }
                 // 写入数据并订阅数据更新器
                 if (typeof res !== "undefined" && res !== null) {
                   store.$patch((state) => {
@@ -242,16 +260,19 @@ const createPiniaIndexedDBPersistPlugin = (workerNum: number = 1) => {
                 }
                 const finish: number = performance.now();
                 pluginStatus.loadStatus.push({
-                  storeId: store.$id,
+                  storeId: persistKey,
                   start,
                   finish
                 });
-
+                const afterRestore = persist.afterRestore;
+                if (typeof afterRestore === "function") {
+                  afterRestore(context);
+                }
                 store.$subscribe((_mutation, state) => {
                   const currentDataPacket: DataTransferPacket<WriteMsg> = {
                     header: SignalPrefixEnum.WRITE,
                     payload: {
-                      storeId: store.$id,
+                      storeId: persistKey,
                       key: "state",
                       data: unwrapReactiveOrRefObj(
                         state,
@@ -263,9 +284,11 @@ const createPiniaIndexedDBPersistPlugin = (workerNum: number = 1) => {
                 });
               })
               .finally(() => {
-                console.log(`${store.$id} init done...`);
+                if (import.meta.env.DEV) {
+                  console.log(`${store.$id} --> ${persistKey} init done...`);
+                }
                 const requestWorkerDetailPacket: DataTransferPacket<string> = {
-                  payload: store.$id,
+                  payload: persistKey,
                   header: SignalPrefixEnum.WORKER_DETAIL
                 };
 
@@ -277,7 +300,7 @@ const createPiniaIndexedDBPersistPlugin = (workerNum: number = 1) => {
                   }: MessageEvent<DataTransferPacket>) {
                     if (
                       data.header === SignalPrefixEnum.WORKER_DETAIL &&
-                      store.$id === data.storeId
+                      persistKey === data.storeId
                     ) {
                       pluginStatus.workerEnvironmentSimpleDesc.push(
                         data.payload
@@ -291,7 +314,7 @@ const createPiniaIndexedDBPersistPlugin = (workerNum: number = 1) => {
                 );
                 const getStorageOptionsPacket: DataTransferPacket = {
                   header: SignalPrefixEnum.DETAIL,
-                  payload: store.$id
+                  payload: persistKey
                 };
                 dataTransferWorker.postMessage(getStorageOptionsPacket);
                 dataTransferWorker.addEventListener(
@@ -301,7 +324,7 @@ const createPiniaIndexedDBPersistPlugin = (workerNum: number = 1) => {
                   }: MessageEvent<DataTransferPacket>) {
                     if (
                       data.header === SignalPrefixEnum.GET_DETAIL_SUCCESS &&
-                      store.$id === data.storeId
+                      persistKey === data.storeId
                     ) {
                       pluginStatus.registerStoreOptions.push(data.payload);
                       // clean up
