@@ -9,7 +9,7 @@ import { createApp } from "vue";
 import { vMoveable } from "@/directives/vMoveable";
 import { useLoadingBar } from "@/hooks/useLoadingBar";
 
-const { plugin, pluginStatus } = createPiniaIndexedDBPersistPlugin(2, true);
+const { plugin, pluginStatus } = createPiniaIndexedDBPersistPlugin(2);
 
 createApp(App)
   .directive("moveable", vMoveable) // register global custom directive command
