@@ -18,7 +18,7 @@ import { SignalPrefixEnum } from "./worker/SignalPrefixEnum";
 /**
  * 插件注册状态
  */
-export type PersistPluginStatus = Readonly<{
+export type PersistPluginStatus = {
   /**
    * 总线程数
    */
@@ -54,7 +54,7 @@ export type PersistPluginStatus = Readonly<{
      */
     finish: number;
   }>;
-}>;
+};
 
 /**
  * 创建 pinia-indexedDB-webWorker 持久化插件以及导出插件配置信息
@@ -63,7 +63,14 @@ export type PersistPluginStatus = Readonly<{
  * @param persistReadOnly 是否序列化并保存/加载只读数据 @see recursiveReplaceValue, @see unwrapReactiveOrRefObj
  * @returns pinia-custom-persist-plugin creating factory
  */
-const createPiniaIndexedDBPersistPlugin = (workerNum: number = 1) => {
+const createPiniaIndexedDBPersistPlugin = (
+  workerNum: number = 1
+): {
+  plugin: (
+    context: PiniaPluginContext
+  ) => Partial<PiniaCustomProperties & PiniaCustomStateProperties> | void;
+  pluginStatus: Readonly<PersistPluginStatus>;
+} => {
   const maxConcurrency: number = navigator.hardwareConcurrency;
   // check illegal
   if (workerNum > maxConcurrency || workerNum < 0) {
@@ -71,16 +78,12 @@ const createPiniaIndexedDBPersistPlugin = (workerNum: number = 1) => {
   }
   const workers: Array<Worker> = [];
   const pluginStatus: PersistPluginStatus = {
-    workerNum: workerNum,
+    workerNum: 0,
     workers,
     registerStoreOptions: [],
     workerEnvironmentSimpleDesc: [],
     loadStatus: []
   };
-  // create worker
-  for (let i: number = 0; i < workerNum; i++) {
-    workers.push(new StorageWorker());
-  }
 
   /**
    * 当前 store 使用的线程所在线程列表下标
@@ -152,6 +155,11 @@ const createPiniaIndexedDBPersistPlugin = (workerNum: number = 1) => {
         const { store } = context;
         switch (persist.storage) {
           case "indexedDB":
+            // 仅在使用到 indexedDB 时才创建 worker 实例
+            if (workers.length < workerNum) {
+              workers.push(new StorageWorker());
+            }
+            pluginStatus.workerNum = workers.length;
             // 用于持久化的 key 名称
             const persistKey: string = persist?.key ? persist.key : store.$id;
             const dataTransferWorker: Worker = workers[selectWorkerLocation];
