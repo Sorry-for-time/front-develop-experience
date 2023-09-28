@@ -9,12 +9,20 @@ export type ContentType = {
   text: string;
   link: string;
 };
-const useContentList = defineStore(StoreIdEnum.CONTENT_LIST, () => {
-  const contentList: Ref<Array<ContentType>> = ref(listData);
-
-  return {
-    contentList
-  };
-});
+const useContentList = defineStore(
+  StoreIdEnum.CONTENT_LIST,
+  () => {
+    const contentList: Ref<Array<ContentType>> = ref(listData);
+    return {
+      contentList
+    };
+  },
+  {
+    persist: {
+      storage: "sessionStorage",
+      persistReadonly: true
+    }
+  }
+);
 
 export { useContentList };

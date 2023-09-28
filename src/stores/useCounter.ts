@@ -6,6 +6,10 @@ const useCounterStore = defineStore(StoreIdEnum.COUNTER, {
     return {
       count: 0
     };
+  },
+  persist: {
+    storage: "localStorage",
+    persistReadonly: true
   }
 });
 
