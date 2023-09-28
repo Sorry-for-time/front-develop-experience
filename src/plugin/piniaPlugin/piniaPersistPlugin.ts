@@ -119,7 +119,6 @@ const createPiniaIndexedDBPersistPlugin = (workerNum: number = 1) => {
       storageType === "localStorage"
         ? localStorage.setItem(store.$id, serializedDataStr)
         : sessionStorage.setItem(store.$id, serializedDataStr);
-      console.log(state);
     });
   };
 
