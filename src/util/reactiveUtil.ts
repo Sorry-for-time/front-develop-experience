@@ -12,22 +12,22 @@ import {
  * 递归解包响应式数据为原始数据引用对象, 切记不能直接修改返回的解包对象, 否则会影响响应式数据, 如果要进行修改, 则需要进行深拷贝
  *
  * @param source 响应式数据源
- * @param copyReadonlyValue 是否复制标记为只读属性的值, 默认为 true {@link "https://cn.vuejs.org/api/reactivity-core.html#readonly"}
+ * @param serializeReadonly 是否复制标记为只读属性的值, 默认为 true {@link "https://cn.vuejs.org/api/reactivity-core.html#readonly"}
  * @returns 响应式数据解包引用对象
  */
 export const unwrapReactiveOrRefObj = <T>(
   source: any,
-  copyReadonlyValue: boolean
+  serializeReadonly: boolean
 ): Readonly<T> => {
   if (!isProxy(source)) {
     return source;
   }
-  const unWrapValue: any = {};
+  const unWrapValue: any = Array.isArray(source) ? [] : {};
   for (const key of Object.getOwnPropertyNames(source)) {
     if (isProxy(source[key])) {
-      unWrapValue[key] = unwrapReactiveOrRefObj(source[key], copyReadonlyValue);
+      unWrapValue[key] = unwrapReactiveOrRefObj(source[key], serializeReadonly);
     } else {
-      if (copyReadonlyValue) {
+      if (serializeReadonly) {
         unWrapValue[key] = toValue(source[key]);
       } else {
         if (!isReadonly(source)) {
