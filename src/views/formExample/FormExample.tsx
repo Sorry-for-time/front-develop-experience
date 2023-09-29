@@ -216,3 +216,4 @@ const FormExample = defineComponent({
 });
 
 export { FormExample };
+export default FormExample;

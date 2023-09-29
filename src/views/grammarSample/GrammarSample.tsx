@@ -21,7 +21,7 @@ const createItem = (): Item => {
   };
 };
 
-export const GrammarSample = defineComponent({
+const GrammarSample = defineComponent({
   name: "GrammarSample",
   setup() {
     const list: Ref<Array<Item>> = ref([]);
@@ -172,3 +172,6 @@ export const GrammarSample = defineComponent({
     );
   }
 });
+
+export { GrammarSample };
+export default GrammarSample;

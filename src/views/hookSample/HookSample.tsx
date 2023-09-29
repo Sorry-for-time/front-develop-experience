@@ -81,3 +81,4 @@ const HookSample = defineComponent({
 });
 
 export { HookSample };
+export default HookSample;

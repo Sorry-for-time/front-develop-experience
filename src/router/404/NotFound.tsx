@@ -59,3 +59,4 @@ const NotFound = defineComponent({
 });
 
 export { NotFound };
+export default NotFound;
