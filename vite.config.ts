@@ -29,7 +29,10 @@ export default defineConfig({
     format: "es"
   },
   build: {
+    target: "esnext",
+    minify: "esbuild",
     cssMinify: true,
+    cssTarget: "chrome61",
     cssCodeSplit: true
   },
   server: {
