@@ -1,8 +1,4 @@
-import { NotFound } from "@/router/404/NotFound";
 import { Layout } from "@/views/Layout";
-import { FormExample } from "@/views/formExample/FormExample";
-import { GrammarSample } from "@/views/grammarSample/GrammarSample";
-import { HookSample } from "@/views/hookSample/HookSample";
 import type { RouteRecordRaw } from "vue-router";
 
 const indexConfig: RouteRecordRaw[] = [
@@ -14,7 +10,7 @@ const indexConfig: RouteRecordRaw[] = [
       {
         path: "index",
         name: "index",
-        component: GrammarSample
+        component: () => import("@/views/grammarSample/GrammarSample")
       },
       {
         path: "component-sample",
@@ -34,7 +30,7 @@ const indexConfig: RouteRecordRaw[] = [
       {
         path: "hook-sample",
         name: "hook-sample",
-        component: HookSample
+        component: () => import("@/views/hookSample/HookSample")
       },
       {
         path: "computed-sample",
@@ -69,9 +65,18 @@ const indexConfig: RouteRecordRaw[] = [
       {
         path: "form-example",
         name: "form-example",
-        component: FormExample
+        component: () => import("@/views/formExample/FormExample")
       },
-      { path: "/:pathMatch(.*)*", name: "not-found", component: NotFound }
+      {
+        path: "web-rtc",
+        name: "web-rtc",
+        component: () => import("@/views/webRTC/WebRTCSample.vue")
+      },
+      {
+        path: "/:pathMatch(.*)*",
+        name: "not-found",
+        component: () => import("@/router/404/NotFound")
+      }
     ]
   }
 ];
