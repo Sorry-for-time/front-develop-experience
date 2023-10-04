@@ -1,8 +1,8 @@
 import { TransitionGroup } from "vue";
-import { type ClassDecoratorSample } from "./ClassDecoratorComponentSample";
-import style from "./ClassDecoratorComponentSample.module.scss";
+import { type ClassDecoratorSample } from "./ClassDecoratorSample";
+import style from "./ClassDecoratorSample.module.scss";
 
-const ClassSampleDecoratorRender = (
+const ClassDecoratorSampleTemplate = (
   that: ClassDecoratorSample
 ): JSX.Element => {
   return (
@@ -38,4 +38,4 @@ const ClassSampleDecoratorRender = (
   );
 };
 
-export { ClassSampleDecoratorRender };
+export { ClassDecoratorSampleTemplate };

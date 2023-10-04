@@ -4,14 +4,14 @@ import { pluginStatus } from "@/main";
 import { useCounterStore } from "@/stores/useCounter";
 import { useListStore } from "@/stores/useListStore";
 import type { VueClassCompHook } from "@/types/type-util";
-import { Component, Setup, Vue, toNative } from "vue-facing-decorator";
-import { ClassSampleDecoratorRender } from "./ClassDecoratorSampleRender";
+import { Component, Setup, TSX, Vue, toNative } from "vue-facing-decorator";
+import { ClassDecoratorSampleTemplate } from "./ClassDecoratorSampleRender";
 
 @Component({
   name: "ClassDecoratorSample",
-  render: ClassSampleDecoratorRender
+  render: ClassDecoratorSampleTemplate
 })
-class ClassDecoratorSample extends Vue implements VueClassCompHook {
+class ClassDecoratorSample extends TSX()(Vue) implements VueClassCompHook {
   @Setup(() => useListStore())
   public readonly listStore!: ReturnType<typeof useListStore>;
 
@@ -72,9 +72,7 @@ class ClassDecoratorSample extends Vue implements VueClassCompHook {
   }
 
   mounted(): void {
-    setTimeout(() => {
-      console.log(pluginStatus);
-    }, 1000);
+    console.log(pluginStatus);
   }
 }
 export { ClassDecoratorSample };

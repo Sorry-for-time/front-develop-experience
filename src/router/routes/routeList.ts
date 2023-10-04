@@ -41,9 +41,7 @@ const indexConfig: RouteRecordRaw[] = [
         path: "class-decorator-sample",
         name: "class-decorator-sample",
         component: () =>
-          import(
-            "@/views/classDecoratorComponentSample/ClassDecoratorComponentSample"
-          )
+          import("@/views/classDecoratorSample/ClassDecoratorSample")
       },
       {
         path: "binary-persist-test",
