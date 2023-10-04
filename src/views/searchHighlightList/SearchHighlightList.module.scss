@@ -27,6 +27,7 @@
   }
 
   li {
+    width: fit-content;
     list-style: none;
     margin: 6px 0;
     position: relative;
@@ -35,8 +36,9 @@
   .item-select {
     position: relative;
 
-    &::after {
+    &::before {
       content: "";
+      z-index: -1;
       position: absolute;
       left: -3px;
       top: 0;
@@ -45,6 +47,20 @@
       border-radius: 5px;
       border: 1px solid rgba(245, 222, 179, 0.616);
       box-shadow: 0 0 3px white;
+      background: rgba(255, 255, 255, 0.144);
+      animation: scale-enter 300ms ease-out forwards;
+      transform-origin: top center;
+    }
+
+    @keyframes scale-enter {
+      from {
+        opacity: 0;
+        transform: scale(1, 0);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1, 1);
+      }
     }
   }
 }
