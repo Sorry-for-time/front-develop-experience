@@ -6,13 +6,13 @@ import { router } from "@/router/router";
 import { createPinia } from "pinia";
 import { createApp } from "vue";
 
-import { vMoveable } from "@/directives/vMoveable";
 import { useLoadingBar } from "@/hooks/useLoadingBar";
+import { vMoveablePlugin } from "@/plugin/directive/vMoveable/vMoveablePlugin";
 
 const { persistPlugin, pluginStatus } = PiniaMultiPersistPluginFactory.build(1);
 
 createApp(App)
-  .directive("moveable", vMoveable) // register global custom directive command
+  .use(vMoveablePlugin)
   .use(router)
   .use(createPinia().use(persistPlugin))
   .mount("#app");
