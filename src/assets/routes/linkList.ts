@@ -57,5 +57,9 @@ export const pageLinks = [
   {
     name: "web-rtc",
     desc: "web-rtc"
+  },
+  {
+    name: "iframe-viewer",
+    desc: "iframe-viewer"
   }
 ];
