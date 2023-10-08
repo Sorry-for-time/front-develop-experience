@@ -1,11 +1,11 @@
 {
-  "name": "vue-homework1",
+  "name": "front-develop-experience",
   "version": "0.0.0",
   "private": true,
   "license": "MIT",
   "author": {
     "name": "Shalling",
-    "url": "https://github.com/Sorry-for-time/vue-homework1",
+    "url": "https://github.com/Sorry-for-time/front-develop-experience",
     "email": "wangsitutired@gmail.com"
   },
   "scripts": {
