@@ -40,10 +40,10 @@ export default defineConfig({
     open: true,
     https: true,
     // 为启用 SharedArrayBuffer 添加头部信息
-    headers: {
-      "Cross-Origin-Opener-Policy": "same-origin",
-      "Cross-Origin-Embedder-Policy": "require-corp"
-    }
+    // headers: {
+    //   "Cross-Origin-Opener-Policy": "same-origin",
+    //   "Cross-Origin-Embedder-Policy": "require-corp"
+    // }
   },
   css: {
     postcss: {
