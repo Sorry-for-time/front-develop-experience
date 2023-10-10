@@ -7,6 +7,7 @@
   2. sfc + class-decorator
   3. class-decorator + tsx
   4. 组合 rxjs...
+  5. 基于 `microapp` 的微前端的跨框架集成尝试
 - 编写一些工具以获取 vue3 响应式对象的原始引用数据(包含对于只读包装数据的指定处理)
   1. `src/util/reactiveUtil.ts`
      - `fn: unwrapReactiveOrRefObj`
@@ -40,3 +41,4 @@
    ```sh
    pnpm dev
    ```
+5. 如果需要启动子应用, 则进入 `micro-service` 目录下的各个子模块, 分别启动
