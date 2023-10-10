@@ -81,7 +81,7 @@ const Layout = defineComponent({
     return (
       <>
         {/* 全局动态背景 */}
-        {isMobile() ? null : <ClassComponentSample />}
+        {!isMobile() ? <ClassComponentSample /> : null}
         <div class={style["wrapper"]}>
           {/* 导航栏 */}
           <nav class={style["nav-header"]}>
