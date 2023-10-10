@@ -9,7 +9,14 @@ import mkcert from "vite-plugin-mkcert";
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
-    vue(),
+    vue({
+      template: {
+        // 将 micro-app 的标签设置为自定义标签
+        compilerOptions: {
+          isCustomElement: (tag) => /^micro-app/.test(tag)
+        }
+      }
+    }),
     vueJsx({
       // tsx/jsx 模板添加装饰器语法支持
       babelPlugins: [["@babel/plugin-proposal-decorators", { legacy: true }]]
@@ -38,7 +45,7 @@ export default defineConfig({
   server: {
     port: 3002,
     open: true,
-    https: true,
+    https: true
     // 为启用 SharedArrayBuffer 添加头部信息
     // headers: {
     //   "Cross-Origin-Opener-Policy": "same-origin",
