@@ -27,6 +27,10 @@ export const pageLinks = [
     desc: "computed-sample"
   },
   {
+    name: "micro-app",
+    desc: "micro-app"
+  },
+  {
     name: "custom-directive",
     desc: "custom-directive"
   },
@@ -57,9 +61,5 @@ export const pageLinks = [
   {
     name: "web-rtc",
     desc: "web-rtc"
-  },
-  {
-    name: "iframe-viewer",
-    desc: "iframe-viewer"
   }
 ];

@@ -3,6 +3,7 @@ import type { RouteRecordRaw } from "vue-router";
 
 const indexConfig: RouteRecordRaw[] = [
   {
+    // @ts-ignore
     path: "/",
     component: Layout,
     redirect: { name: "index" },
@@ -69,6 +70,38 @@ const indexConfig: RouteRecordRaw[] = [
         path: "web-rtc",
         name: "web-rtc",
         component: () => import("@/views/webRTC/WebRTCSample.vue")
+      },
+      {
+        path: "micro-app",
+        name: "micro-app",
+        component: () => import("@/views/microAppRouteWrapper/MicroAppWrapper"),
+        redirect: { name: "angular16" },
+        children: [
+          {
+            path: "angular16",
+            name: "angular16",
+            component: () =>
+              import(
+                "@/views/microAppRouteWrapper/children/AngularChildApp.vue"
+              )
+          },
+          {
+            path: "react18",
+            name: "react18",
+            component: () =>
+              import(
+                "@/views/microAppRouteWrapper/children/React18ChildApp.vue"
+              )
+          },
+          {
+            path: "iframe-viewer",
+            name: "iframe-viewer",
+            component: () =>
+              import(
+                "@/views/microAppRouteWrapper/children/iframeViewer/IframeViewer"
+              )
+          }
+        ]
       },
       {
         path: "/:pathMatch(.*)*",
