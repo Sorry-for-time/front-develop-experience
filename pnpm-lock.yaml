@@ -5,6 +5,9 @@ settings:
   excludeLinksFromLockfile: false
 
 dependencies:
+  '@micro-zoe/micro-app':
+    specifier: 1.0.0-rc.0
+    version: 1.0.0-rc.0
   '@types/lodash-es':
     specifier: ^4.17.9
     version: 4.17.9
@@ -41,6 +44,9 @@ dependencies:
   vue3-styled-components:
     specifier: ^1.2.1
     version: 1.2.1
+  zone.js:
+    specifier: ^0.14.0
+    version: 0.14.0
 
 devDependencies:
   '@babel/plugin-proposal-decorators':
@@ -626,6 +632,10 @@ packages:
       '@jridgewell/resolve-uri': 3.1.1
       '@jridgewell/sourcemap-codec': 1.4.15
     dev: true
+
+  /@micro-zoe/micro-app@1.0.0-rc.0:
+    resolution: {integrity: sha512-ksKgpSBh0V2SzbLq1vLL8xK6iyeXW3BkJoQNmShMgTG491FzEhtG9e0A6KkoWqADYkdNK/1PtoRv4OK9PtrBGw==}
+    dev: false
 
   /@octokit/auth-token@3.0.4:
     resolution: {integrity: sha512-TWFX7cZF2LXoCvdmJWY7XVPi74aSY0+FfBZNSXEXFkMpjcqsQwDSYVv5FhRFaI0V1ECnwbz4j59T/G+rXNWaIQ==}
@@ -2504,3 +2514,9 @@ packages:
   /yallist@4.0.0:
     resolution: {integrity: sha512-3wdGidZyq5PB084XLES5TpOSRA3wjXAlIWMhum2kRcv/41Sn2emQ0dycQW4uZXLejwKvg6EsvbdlVL+FYEct7A==}
     dev: true
+
+  /zone.js@0.14.0:
+    resolution: {integrity: sha512-Sz0G0TjMuyApIcuTJeK742+xLLKEPjYtkdBEazBlYePHkICVp9DPKqI/4dJt3LCtQBd52sCxz23uAFJ2OJa6Ow==}
+    dependencies:
+      tslib: 2.6.2
+    dev: false

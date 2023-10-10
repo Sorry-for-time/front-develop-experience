@@ -1,4 +1,5 @@
 import "@/assets/style/main.scss";
+import "zone.js";
 
 import { App } from "@/App";
 import { PiniaMultiPersistPluginFactory } from "@/plugin/piniaPlugin/PiniaMultiPersistPluginFactory";
@@ -9,6 +10,8 @@ import { createApp } from "vue";
 import { useLoadingBar } from "@/hooks/useLoadingBar";
 import { vMoveablePlugin } from "@/plugin/directive/vMoveable/vMoveablePlugin";
 
+import microApp from "@micro-zoe/micro-app";
+
 const { persistPlugin, pluginStatus } = PiniaMultiPersistPluginFactory.build(1);
 
 createApp(App)
@@ -17,6 +20,10 @@ createApp(App)
   .use(createPinia().use(persistPlugin))
   .mount("#app");
 
+microApp.start({
+  "keep-alive": true,
+  inline: true
+});
 const loadingBarHooks = useLoadingBar(document.body);
 
 export { loadingBarHooks, pluginStatus };
