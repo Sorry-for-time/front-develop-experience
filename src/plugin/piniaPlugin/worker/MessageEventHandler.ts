@@ -273,8 +273,10 @@ class MessageEventHandler {
           break;
         case SignalPrefixEnum.DETAIL:
           this.#getStoreOptions(data.payload);
+          break;
         case SignalPrefixEnum.WORKER_DETAIL:
           this.#getWorkerDetail(data.payload);
+          break;
         default:
           break;
       }
